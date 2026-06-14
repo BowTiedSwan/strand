@@ -1,0 +1,292 @@
+/* ============================================================
+   Wisp default theme — "structure made visible"
+   Signature: the wisp rail (a luminous line that brightens at
+   each structural anchor of an article).
+   ============================================================ */
+
+:root {
+  --paper: #f7f8f6;
+  --paper-raised: #ffffff;
+  --ink: #16191c;
+  --muted: #5b6168;
+  --faint: #868d93;
+  --line: #e3e5e1;
+  --accent: #1aa890;
+  --accent-strong: #0e8c77;
+  --accent-tint: #e9f5f1;
+
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-body: var(--font-newsreader), Georgia, serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --measure: 66ch;
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+  --rail-w: 2px;
+
+  --step--1: 0.82rem;
+  --step-0: 1.125rem;
+  --step-1: 1.32rem;
+  --step-2: 1.75rem;
+  --step-3: clamp(2rem, 1.4rem + 2.6vw, 3.1rem);
+  --step-4: clamp(2.6rem, 1.6rem + 4.4vw, 4.6rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #101316;
+    --paper-raised: #161a1e;
+    --ink: #e8eae6;
+    --muted: #9aa2a8;
+    --faint: #767d83;
+    --line: #262b2f;
+    --accent: #3fd0b8;
+    --accent-strong: #5fe0ca;
+    --accent-tint: #16261f;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.72;
+  font-feature-settings: "liga" 1, "onum" 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 0.18em; }
+a:hover { color: var(--accent-strong); }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+/* ---------------------------------------------------- layout shell */
+
+.shell { max-width: 78rem; margin: 0 auto; padding: 0 var(--gutter); }
+
+.masthead {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 1rem; padding: 2.4rem 0 2rem;
+  border-bottom: 1px solid var(--line);
+}
+.masthead__brand {
+  font-family: var(--font-display);
+  font-weight: 460;
+  font-optical-sizing: auto;
+  font-size: var(--step-2);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 0.55rem;
+}
+/* the brand mark: a small wisp of light */
+.masthead__mark {
+  width: 0.5rem; height: 1.5rem; border-radius: 999px;
+  background: linear-gradient(180deg, transparent, var(--accent) 55%, var(--accent-strong));
+  box-shadow: 0 0 16px -2px var(--accent);
+}
+.masthead__nav {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  display: flex; gap: 1.4rem;
+}
+.masthead__nav a { text-decoration: none; color: var(--muted); }
+.masthead__nav a:hover { color: var(--ink); }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--accent-strong);
+}
+
+.footer {
+  margin-top: 5rem; padding: 2.5rem 0 3.5rem;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: var(--step--1);
+  color: var(--muted);
+  display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; justify-content: space-between;
+}
+
+/* ---------------------------------------------------- index list */
+
+.index { padding: 2.5rem 0 1rem; }
+.index__lede {
+  font-family: var(--font-display); font-optical-sizing: auto;
+  font-weight: 380; font-size: var(--step-3); line-height: 1.12;
+  letter-spacing: -0.015em; max-width: 20ch; margin: 0 0 2.6rem;
+}
+.feed { list-style: none; margin: 0; padding: 0; }
+.entry {
+  display: grid; grid-template-columns: 7.5rem 1fr; gap: 1.5rem;
+  padding: 1.8rem 0; border-top: 1px solid var(--line);
+}
+.entry:last-child { border-bottom: 1px solid var(--line); }
+.entry__date {
+  font-family: var(--font-mono); font-size: var(--step--1);
+  color: var(--faint); padding-top: 0.45rem; white-space: nowrap;
+}
+.entry__title {
+  font-family: var(--font-display); font-optical-sizing: auto;
+  font-weight: 440; font-size: var(--step-2); line-height: 1.16;
+  letter-spacing: -0.012em; margin: 0 0 0.4rem;
+}
+.entry__title a { text-decoration: none; }
+.entry__title a:hover { text-decoration: underline; }
+.entry__dek { color: var(--muted); margin: 0 0 0.7rem; max-width: 60ch; }
+.entry__meta {
+  font-family: var(--font-mono); font-size: var(--step--1);
+  color: var(--faint); display: flex; gap: 1rem; flex-wrap: wrap;
+}
+.tagchip { color: var(--accent-strong); text-decoration: none; }
+.tagchip::before { content: "#"; opacity: 0.55; }
+
+@media (max-width: 640px) {
+  .entry { grid-template-columns: 1fr; gap: 0.4rem; }
+  .entry__date { padding-top: 0; }
+}
+
+/* ---------------------------------------------------- article + wisp rail */
+
+.article { padding: 3rem 0 0; }
+.article__head { max-width: var(--measure); }
+.article__kicker {
+  display: flex; gap: 0.9rem; align-items: center; margin-bottom: 1.1rem;
+}
+.article__title {
+  font-family: var(--font-display); font-optical-sizing: auto;
+  font-weight: 420; font-size: var(--step-4); line-height: 1.05;
+  letter-spacing: -0.02em; margin: 0 0 1rem;
+}
+.byline {
+  font-family: var(--font-mono); font-size: var(--step--1);
+  color: var(--muted); display: flex; gap: 1rem; flex-wrap: wrap;
+  padding-bottom: 1.6rem;
+}
+.byline strong { color: var(--ink); font-weight: 500; }
+
+/* the rail: prose sits in a grid with a luminous left column */
+.article__body {
+  display: grid;
+  grid-template-columns: var(--rail-w) minmax(0, var(--measure));
+  gap: 0 1.8rem;
+  margin-top: 0.5rem;
+}
+.rail { position: relative; }
+.rail__track {
+  position: sticky; top: 0; height: 100vh; width: var(--rail-w);
+  background: var(--line);
+  overflow: visible;
+}
+/* the lit portion = reading progress; brightened, glowing */
+.rail__lit {
+  position: absolute; inset: 0 auto 0 0; width: var(--rail-w);
+  height: var(--progress, 0%);
+  background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+  box-shadow: 0 0 12px -1px var(--accent);
+  transition: height 0.15s linear;
+}
+/* structural anchors light up as small nodes */
+.rail__node {
+  position: absolute; left: 50%; transform: translate(-50%, -50%);
+  width: 7px; height: 7px; border-radius: 999px;
+  background: var(--paper); border: 1.5px solid var(--accent);
+}
+.prose { min-width: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rail__lit { transition: none; }
+}
+
+/* on narrow screens the rail becomes a top progress sliver */
+@media (max-width: 820px) {
+  .article__body { grid-template-columns: 1fr; }
+  .rail { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 50; }
+  .rail__track { position: static; height: 2px; width: 100%; }
+  .rail__lit { inset: 0 auto 0 0; height: 2px; width: var(--progress, 0%);
+    background: linear-gradient(90deg, var(--accent), var(--accent-strong)); }
+  .rail__node { display: none; }
+}
+
+/* ---------------------------------------------------- summary (TL;DR) */
+
+.summary {
+  max-width: var(--measure);
+  margin: 0 0 2rem; padding: 1.1rem 1.3rem;
+  background: var(--accent-tint);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+}
+.summary__label {
+  font-family: var(--font-mono); font-size: var(--step--1);
+  text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-strong);
+  display: block; margin-bottom: 0.35rem;
+}
+.summary p { margin: 0; font-size: var(--step-1); line-height: 1.5; }
+
+/* ---------------------------------------------------- prose typography */
+
+.prose > * { max-width: var(--measure); }
+.prose p { margin: 0 0 1.35rem; }
+.prose h2 {
+  font-family: var(--font-display); font-optical-sizing: auto;
+  font-weight: 460; font-size: var(--step-2); line-height: 1.18;
+  letter-spacing: -0.012em; margin: 2.8rem 0 0.9rem; scroll-margin-top: 1.5rem;
+}
+.prose h3 {
+  font-family: var(--font-display); font-weight: 500;
+  font-size: var(--step-1); margin: 2rem 0 0.6rem;
+}
+.prose a { font-weight: 500; }
+.prose strong { font-weight: 600; }
+.prose blockquote {
+  margin: 1.6rem 0; padding-left: 1.2rem; border-left: 2px solid var(--line);
+  color: var(--muted); font-style: italic;
+}
+.prose code {
+  font-family: var(--font-mono); font-size: 0.86em;
+  background: var(--accent-tint); padding: 0.12em 0.36em; border-radius: 3px;
+}
+.prose pre {
+  font-family: var(--font-mono); font-size: var(--step--1); line-height: 1.6;
+  background: var(--paper-raised); border: 1px solid var(--line);
+  border-radius: 6px; padding: 1rem 1.1rem; overflow-x: auto; margin: 1.6rem 0;
+}
+.prose pre code { background: none; padding: 0; }
+.prose img { max-width: 100%; height: auto; border-radius: 6px; }
+.prose hr { border: none; border-top: 1px solid var(--line); margin: 2.4rem 0; }
+
+/* a custom MDX component used by sample content */
+.callout {
+  margin: 1.6rem 0; padding: 1rem 1.2rem;
+  border: 1px solid var(--line); border-radius: 6px;
+  background: var(--paper-raised);
+  font-size: var(--step--1); color: var(--muted);
+}
+
+/* ---------------------------------------------------- faq + sources */
+
+.apparatus { max-width: var(--measure); margin-top: 3.2rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+.apparatus__label {
+  font-family: var(--font-mono); font-size: var(--step--1);
+  text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-strong);
+  margin: 0 0 1.1rem;
+}
+.faq dt { font-family: var(--font-display); font-weight: 500; font-size: var(--step-1); margin-top: 1.2rem; }
+.faq dd { margin: 0.3rem 0 0; color: var(--muted); }
+
+.sources { margin-top: 2.6rem; }
+.sources ol { font-family: var(--font-mono); font-size: var(--step--1); color: var(--muted); padding-left: 1.4rem; }
+.sources li { margin: 0.5rem 0; }
+.sources a { color: var(--accent-strong); }
+
+/* ---------------------------------------------------- tag/author headers */
+
+.collection__head { padding: 3rem 0 1rem; border-bottom: 1px solid var(--line); }
+.collection__title { font-family: var(--font-display); font-weight: 440; font-size: var(--step-3); margin: 0.3rem 0 0.4rem; letter-spacing: -0.015em; }

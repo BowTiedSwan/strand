@@ -1,0 +1,43 @@
+---
+title: "Why agent-first publishing changes the shape of a CMS"
+slug: agent-first-publishing
+description: "When agents write the articles, a content system needs a strict schema and a Git repo far more than it needs an editor UI. Here is what changes."
+publishedAt: "2026-06-10T08:00:00Z"
+status: published
+author: staff
+type: BlogPosting
+tags: [meta, architecture, geo]
+summary: "Agent-written content shifts the value of a CMS from the editor UI to the schema and the pipeline. Wisp keeps the schema, the SEO core, and Git — and drops the rest."
+faq:
+  - q: "Does Wisp have an admin interface?"
+    a: "No. Agents write MDX against a validated schema; Git is the review workflow and the audit log."
+  - q: "How does this help with AI search?"
+    a: "Every page ships llms.txt, a clean .md version, FAQ and speakable schema, and cited sources — the signals AI search engines reward."
+sources:
+  - title: "The llms.txt proposal"
+    url: "https://llmstxt.org"
+    publisher: "llmstxt.org"
+---
+
+For two decades a CMS meant a database and an editor. The editor was where the value
+lived: the WYSIWYG surface, the media library, the roles and permissions, the workflow.
+
+Agents change that. When an agent drafts the article, the editor UI stops being the
+product. What matters is the **contract** the agent writes against.
+
+## The schema is the product
+
+A strict, validated schema is more important when a machine is writing, not less. It is
+the interface between the agent and the publication.
+
+<Callout>In Wisp, a post that fails schema validation cannot be committed — CI is the editor's red pen.</Callout>
+
+## Git replaces the database
+
+Every article is a commit. History, review, rollback, and provenance come for free, and
+the repo is legible to the same agents that wrote it.
+
+## Optimizing for machines that read
+
+The last shift is the reader. Half of them are now models. So the structure an agent
+produces — a summary, an FAQ, cited sources — is exactly what AI search engines extract.

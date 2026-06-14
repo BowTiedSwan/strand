@@ -241,8 +241,8 @@ wisp/
 │   ├── create-wisp/ the `npm create wisp` scaffolder                     [built]
 │   ├── cli/         @wisp/cli — `wisp` bin: MCP server + `wisp validate`  [built]
 │   │                  src/tools.ts is the canonical MCP tool surface
-│   ├── next/        default Next.js frontend + adapters                  [planned]
-│   └── content-api/ headless typed content package + JSON API           [planned]
+│   ├── next/        @wisp/next — default theme (wisp rail, MDX, SEO/GEO)      [built]
+│   └── content-api/ @wisp/content-api — typed queries + JSON API + client    [built]
 ├── skills/
 │   ├── wisp-publish/SKILL.md
 │   ├── wisp-content-schema/SKILL.md

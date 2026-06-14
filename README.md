@@ -30,8 +30,8 @@ See [`DESIGN.md`](./DESIGN.md) for the full architecture, the keep/cut analysis,
 | [`packages/cli`](./packages/cli) | `@wisp/cli` — the `wisp` bin: the **MCP server** (real git + filesystem ops) and `wisp validate` | ✅ built + verified |
 | [`skills/`](./skills) | Three native skills (`wisp-publish`, `wisp-content-schema`, `wisp-fact-check-cite`) + the skill install/dedup resolver | ✅ |
 | [`profile-dist/`](./profile-dist) | A reference Hermes editor profile distribution (SOUL + config + cron) | ✅ |
-| `packages/next` | Default Next.js theme + adapters | ⬜ planned |
-| `packages/content-api` | Headless typed content package + JSON API | ⬜ planned |
+| [`packages/next`](./packages/next) | `@wisp/next` — the default theme: a Next.js publication with the **wisp rail**, MDX rendering, and all SEO/GEO routes | ✅ built + verified |
+| [`packages/content-api`](./packages/content-api) | `@wisp/content-api` — typed query layer + framework-agnostic JSON API (Hono/Next/Bun) + typed client + static snapshot | ✅ built + verified |
 
 Every code package typechecks under `strict` + `noUncheckedIndexedAccess` and has been
 exercised against real inputs (MDX fixtures, a temp git repo, and a live MCP stdio session).
@@ -104,8 +104,9 @@ repoint each package's `exports` — that's the one step between this repo and
 
 ## Status
 
-Early. The design and the three core code packages are real and tested; the default
-theme, the headless content API, and deploy-on-merge are the next builds. See
+Early but substantial. The design plus five code packages are real and tested: `@wisp/core`,
+`create-wisp`, `@wisp/cli` (MCP server), `@wisp/next` (default theme), and `@wisp/content-api`
+(headless). Deploy-on-merge and the managed cloud tier are the next builds. See
 [`DESIGN.md` §10](./DESIGN.md) for the roadmap.
 
 ## License
