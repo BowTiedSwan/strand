@@ -1,0 +1,67 @@
+# Wisp editor — Hermes profile config.
+# Shipped as part of a profile distribution (SOUL + config + skills + cron + MCP).
+# Credentials, memories, and sessions stay per-machine (.env, state.db) — not in this repo.
+#
+# Keys confirmed from Hermes docs: model, provider, toolsets, terminal.cwd, compression, auxiliary.
+# Keys marked (verify) follow Hermes conventions but should be checked against the
+# configuration / integrations reference before shipping.
+
+model:
+  default: anthropic/claude-sonnet-4
+  # fallback: google/gemini-3-flash-preview   # optional cheaper fallback
+
+provider: nous            # or: openrouter
+
+# Research + git/build + the marketing pack and native skills.
+toolsets:
+  - web
+  - terminal
+  - skills
+
+terminal:
+  backend: local
+  cwd: /absolute/path/to/blog-repo   # set by the installer — the separation point
+
+compression:
+  enabled: true
+  threshold: 0.50
+auxiliary:
+  compression:
+    model: ""            # empty = use main chat model
+
+# Preload the editorial skill set every session (synced by resolve-skills.ts).
+skills:                   # (verify exact key/shape against Hermes config reference)
+  preload:
+    - wisp-content-schema
+    - wisp-fact-check-cite
+    - wisp-publish
+    - copywriting
+    - copy-editing
+    - content-strategy
+    - programmatic-seo
+    - seo-audit
+    - ai-seo
+    - schema-markup
+    - site-architecture
+    - analytics-tracking
+
+# Drive the CMS through structured tools rather than raw git.
+mcp_servers:              # (verify exact key/shape against Hermes integrations reference)
+  - name: wisp
+    type: stdio
+    command: wisp
+    args: ["mcp"]
+    # or type: url / url: http://localhost:8787/mcp for a long-running server
+
+# Optional scheduled cadence — e.g. weekday morning news drafting.
+cron:                     # (verify exact key/shape against Hermes cron reference)
+  - name: morning-draft
+    schedule: "0 7 * * 1-5"        # 07:00, Mon–Fri
+    prompt: >
+      Review the topic backlog and today's sources. Draft one NewsArticle:
+      research and cite it, fill summary + faq, validate, and open a PR.
+      Do not auto-merge.
+    enabled: false                  # installer turns this on if the user opts into cadence
+
+display:
+  busy_input_mode: queue

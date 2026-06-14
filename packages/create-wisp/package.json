@@ -1,0 +1,21 @@
+{
+  "name": "create-wisp",
+  "version": "0.0.1",
+  "description": "Scaffold an agent-first Wisp publication.",
+  "type": "module",
+  "license": "MIT",
+  "bin": { "create-wisp": "./dist/index.js" },
+  "files": ["dist", "../../skills"],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.7.0",
+    "@wisp/core": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}

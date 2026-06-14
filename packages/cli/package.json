@@ -1,0 +1,24 @@
+{
+  "name": "@wisp/cli",
+  "version": "0.0.1",
+  "description": "Wisp project CLI: MCP server + content validation.",
+  "type": "module",
+  "license": "MIT",
+  "bin": { "wisp": "./dist/bin.js" },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@wisp/core": "^0.0.1",
+    "gray-matter": "^4.0.3",
+    "zod": "^3.23.8",
+    "zod-to-json-schema": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}
