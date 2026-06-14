@@ -7,3 +7,4 @@ out/
 .env.local
 .DS_Store
 package-lock.json
+packages/create-wisp/skills/

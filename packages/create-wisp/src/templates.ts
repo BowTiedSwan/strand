@@ -416,6 +416,92 @@ jobs:
 `;
 }
 
+/** Secrets the chosen deploy target needs (surfaced in the README). */
+export function deploySecrets(a: Answers): string[] {
+  switch (a.deployTarget) {
+    case "vercel": return ["VERCEL_TOKEN", "VERCEL_ORG_ID", "VERCEL_PROJECT_ID"];
+    case "cloudflare": return ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"];
+    case "netlify": return ["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID"];
+    case "self-host": return ["SSH_HOST", "SSH_USER", "SSH_KEY", "DEPLOY_PATH"];
+  }
+}
+
+/**
+ * Deploy-on-merge workflow. Validation gates every deploy; pushes to main go to
+ * production, PRs get a preview where the platform supports it. The SEO/GEO
+ * artifacts (sitemap, JSON-LD, llms.txt, .md endpoints) regenerate as part of
+ * the build, so a merge always reships them.
+ */
+export function deployWorkflow(a: Answers): string | null {
+  if (a.frontend === "headless") return null;
+
+  const head = `name: deploy
+on:
+  push: { branches: [main] }
+  pull_request:
+concurrency:
+  group: deploy-\${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npm run validate          # gate: never deploy invalid content`;
+
+  if (a.deployTarget === "vercel") {
+    return `${head}
+      # Zero-config alternative: connect the repo in the Vercel dashboard.
+      - run: npm i -g vercel@latest
+      - run: vercel pull --yes --environment=\${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }} --token=\${{ secrets.VERCEL_TOKEN }}
+      - run: vercel build \${{ github.ref == 'refs/heads/main' && '--prod' || '' }} --token=\${{ secrets.VERCEL_TOKEN }}
+      - run: vercel deploy --prebuilt \${{ github.ref == 'refs/heads/main' && '--prod' || '' }} --token=\${{ secrets.VERCEL_TOKEN }}
+    env:
+      VERCEL_ORG_ID: \${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: \${{ secrets.VERCEL_PROJECT_ID }}
+`;
+  }
+
+  if (a.deployTarget === "cloudflare") {
+    return `${head}
+      # Next on Cloudflare Pages uses the next-on-pages adapter.
+      - run: npx --yes @cloudflare/next-on-pages@1
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: \${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: \${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy .vercel/output/static --project-name=${a.projectName}
+`;
+  }
+
+  if (a.deployTarget === "netlify") {
+    return `${head}
+      # Netlify auto-detects Next via its runtime. Dashboard git-connect also works.
+      - run: npm i -g netlify-cli
+      - run: netlify deploy --build \${{ github.ref == 'refs/heads/main' && '--prod' || '' }} --message "\${{ github.sha }}"
+    env:
+      NETLIFY_AUTH_TOKEN: \${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: \${{ secrets.NETLIFY_SITE_ID }}
+`;
+  }
+
+  // self-host
+  return `${head}
+      - run: npm run build
+      - name: Rsync build to server (main only)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          install -m 600 /dev/stdin "$HOME/key" <<< "\${{ secrets.SSH_KEY }}"
+          rsync -az --delete -e "ssh -i $HOME/key -o StrictHostKeyChecking=accept-new" \\
+            .next package.json public/ \${{ secrets.SSH_USER }}@\${{ secrets.SSH_HOST }}:\${{ secrets.DEPLOY_PATH }}
+          ssh -i "$HOME/key" -o StrictHostKeyChecking=accept-new \\
+            \${{ secrets.SSH_USER }}@\${{ secrets.SSH_HOST }} "cd \${{ secrets.DEPLOY_PATH }} && npm ci --omit=dev && pm2 reload ${a.projectName} || true"
+`;
+}
+
 export function preCommitHook(): string {
   return `#!/bin/sh
 # Wisp: block commits that contain invalid post frontmatter.
@@ -568,6 +654,17 @@ does this), then \`npm run validate\`. The \`wisp-publish\` skill opens the PR.
 \`sitemap.xml\`, \`robots.txt\`, \`feed.xml\`, \`llms.txt\`, \`llms-full.txt\`, per-post JSON-LD
 (Article/FAQPage/speakable + author entity), and a clean \`.md\` version of every post at
 \`/blog/<slug>.md\` for AI crawlers.
+
+## Deploy
+${a.frontend === "headless"
+  ? `Headless build — wire your own deploy, or expose the content API from your host.`
+  : `Pushes to \`main\` deploy to **${a.deployTarget}** via \`.github/workflows/deploy.yml\`
+(validation gates every deploy; PRs get a preview where supported). Add these repo secrets:
+
+${deploySecrets(a).map((s) => `- \`${s}\``).join("\n")}
+
+The SEO/GEO artifacts regenerate on every build, so a merge always reships them. Connecting
+the repo in the ${a.deployTarget} dashboard is the zero-config alternative.`}
 `;
 }
 

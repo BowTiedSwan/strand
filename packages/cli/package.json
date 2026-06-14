@@ -7,8 +7,9 @@
   "bin": { "wisp": "./dist/bin.js" },
   "files": ["dist"],
   "scripts": {
-    "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "tsup": "^8.0.0",
     "typescript": "^5.6.0"
   }
 }

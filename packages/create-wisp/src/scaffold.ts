@@ -41,6 +41,8 @@ export function scaffold(a: Answers, opts: ScaffoldOptions = {}): ScaffoldResult
   w("lib/wisp.ts", t.libWisp());
   w("scripts/validate.mjs", t.validateScript());
   w(".github/workflows/validate.yml", t.ciWorkflow());
+  const deploy = t.deployWorkflow(a);
+  if (deploy) w(".github/workflows/deploy.yml", deploy);
   w("README.md", t.readme(a));
   w("wisp.json", t.wispJson(a));
 
@@ -108,8 +110,14 @@ export function scaffold(a: Answers, opts: ScaffoldOptions = {}): ScaffoldResult
   }
 
   /* ---- skills (native copied; marketing via npx, skipped in dry-run) ---- */
-  // Native skills ship alongside this package at <pkg>/../../skills.
-  const nativeSrc = join(import.meta.dirname, "..", "..", "..", "skills");
+  // Resolve the native skills dir across layouts: bundled in the published
+  // package (<pkg>/skills, reached as ../skills from dist/ or src/) or the
+  // monorepo source of truth (repo/skills, ../../../skills in dev).
+  const nativeSrc = [
+    join(import.meta.dirname, "..", "skills"),
+    join(import.meta.dirname, "..", "..", "skills"),
+    join(import.meta.dirname, "..", "..", "..", "skills"),
+  ].find((p) => existsSync(join(p, "wisp-publish"))) ?? join(import.meta.dirname, "..", "skills");
   const skills = syncSkills(a, dir, nativeSrc, opts.dryRun);
 
   /* ---- git init ---- */

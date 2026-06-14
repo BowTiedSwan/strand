@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { startServer } from "./server";
 import { validateCli } from "./validate";
 

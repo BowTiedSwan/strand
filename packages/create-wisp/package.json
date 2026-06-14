@@ -5,10 +5,11 @@
   "type": "module",
   "license": "MIT",
   "bin": { "create-wisp": "./dist/index.js" },
-  "files": ["dist", "../../skills"],
+  "files": ["dist", "skills"],
   "scripts": {
-    "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "build": "tsup && node scripts/copy-skills.mjs",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@clack/prompts": "^0.7.0",
@@ -16,6 +17,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "tsup": "^8.0.0",
     "typescript": "^5.6.0"
   }
 }

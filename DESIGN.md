@@ -225,6 +225,8 @@ $ npm create wisp@latest
 ? [if MCP or Both] Provision a dedicated Hermes editor profile?
      › Yes (profile distribution repo) / Yes (local profile) / No
    └─ writes SOUL.md, sets terminal.cwd → blog repo, syncs skills, wires MCP, optional cron + gateway
+? Deploy target › Vercel / Cloudflare Pages / Netlify / Self-host
+   └─ emits a deploy-on-merge workflow (validation-gated) for the target
 ? Initialize Git repo + content schema + CI validation › Yes
 ```
 AI-search/GEO is not a question — it is always on.
@@ -258,7 +260,13 @@ wisp/
 
 ## 10. Open questions / roadmap
 
-- **Cloud tier:** hosted agent runtime (managed Hermes profile per customer) + Git sync + analytics + on-merge deploy. Open-core; 100% of the publishing core stays MIT.
+- **Done since first design:** all five code packages built and verified; the publishable
+  packages build to `dist` with tsup and run under plain `node`/`npx`; deploy-on-merge
+  workflows (Vercel / Cloudflare / Netlify / self-host) are emitted by the scaffolder,
+  validation-gated.
+- **Cloud tier (next):** hosted agent runtime (managed Hermes profile per customer) + Git
+  sync + analytics + on-merge deploy. Open-core; 100% of the publishing core stays MIT.
 - **Per-skill vs whole-pack install:** skills.sh exposes per-skill URLs; resolver assumes per-skill `add` with a whole-pack fallback (confirm against the skills.sh CLI).
 - **Hermes config keys:** `model`, `provider`, `toolsets`, `terminal.cwd`, `compression` are confirmed from docs; `cron` and MCP-connection keys are represented best-effort in `profile-dist/config.yaml` — verify against the Hermes configuration/integrations reference before shipping.
+- **Published-package assumption:** a scaffolded project depends on `@wisp/*` from npm, so its CI `npm ci` needs those packages published (they resolve via the workspace in this monorepo). Publish `@wisp/core`/`@wisp/cli`/`@wisp/content-api` before the generated CI is green on a clean runner.
 - **Scheduled posts:** `status: scheduled` + `publishedAt` in the future, resolved at build by a scheduled CI run (or the editor profile's cron).

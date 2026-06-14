@@ -95,19 +95,32 @@ never force-pushes, and only auto-merges when the repo itself allows it. The con
 schema is enforced in CI and a pre-commit hook, so a malformed post cannot merge. The
 editor agent is instructed never to fabricate sources.
 
-## Known packaging step
+## Building & publishing
 
-`@wisp/core` and `@wisp/cli` currently resolve `.ts` source (great for tsx / Next /
-bundlers). Before publishing to npm, add a `tsc`/`tsup` build emitting `dist/*.js` and
-repoint each package's `exports` — that's the one step between this repo and
-`npx`-runnable on a clean machine.
+The publishable packages (`@wisp/core`, `@wisp/cli`, `@wisp/content-api`, `create-wisp`)
+build with **tsup** to `dist/*.js` + `.d.ts`, with `exports` pointed at the built output —
+so they run under plain `node` (and `npx`) on a clean machine, not just via tsx/bundlers.
+
+```bash
+npm run -ws build        # build every package
+```
+
+Each carries a `prepublishOnly` build hook; `create-wisp` bundles the native skills into its
+own tarball at build time. `@wisp/next` is a private app, built with `next build`.
+
+## Deploy
+
+Scaffolded sites ship a deploy-on-merge GitHub Actions workflow for the chosen target —
+Vercel, Cloudflare Pages, Netlify, or self-host — that **gates every deploy on content
+validation** and reships the SEO/GEO artifacts on each build. Connecting the repo in the
+provider dashboard is the zero-config alternative.
 
 ## Status
 
 Early but substantial. The design plus five code packages are real and tested: `@wisp/core`,
 `create-wisp`, `@wisp/cli` (MCP server), `@wisp/next` (default theme), and `@wisp/content-api`
-(headless). Deploy-on-merge and the managed cloud tier are the next builds. See
-[`DESIGN.md` §10](./DESIGN.md) for the roadmap.
+(headless) — all building to `dist` and verified under plain `node`. The managed cloud tier is
+the next build. See [`DESIGN.md` §10](./DESIGN.md) for the roadmap.
 
 ## License
 

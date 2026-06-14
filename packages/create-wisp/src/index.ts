@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { runPrompts, outro } from "./prompts";
 import { scaffold } from "./scaffold";
 

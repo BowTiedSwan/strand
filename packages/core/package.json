@@ -4,13 +4,18 @@
   "description": "Wisp core: content schema, MDX loader, and SEO/GEO generators.",
   "type": "module",
   "license": "MIT",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./schema": "./src/schema.ts"
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./schema": { "types": "./dist/schema.d.ts", "import": "./dist/schema.js" }
   },
+  "files": ["dist"],
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
@@ -18,6 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "tsup": "^8.0.0",
     "typescript": "^5.6.0"
   }
 }

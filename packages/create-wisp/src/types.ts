@@ -4,6 +4,7 @@ export type Subscriptions = "none" | "buttondown" | "convertkit" | "resend";
 export type AgentMode = "cli" | "mcp" | "both";
 export type SkillSet = "core" | "core+media" | "custom";
 export type ProfileChoice = "dist" | "local" | "no";
+export type DeployTarget = "vercel" | "cloudflare" | "netlify" | "self-host";
 
 export interface Answers {
   projectName: string;
@@ -16,6 +17,7 @@ export interface Answers {
   customSkills: string[];
   profile: ProfileChoice;
   cron: boolean;
+  deployTarget: DeployTarget;
   gitInit: boolean;
 }
 

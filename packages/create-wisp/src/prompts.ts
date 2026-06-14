@@ -2,7 +2,7 @@ import {
   intro, outro, text, select, confirm, multiselect, isCancel, cancel,
 } from "@clack/prompts";
 import type {
-  Answers, Frontend, Analytics, Subscriptions, AgentMode, SkillSet, ProfileChoice,
+  Answers, Frontend, Analytics, Subscriptions, AgentMode, SkillSet, ProfileChoice, DeployTarget,
 } from "./types";
 import { MARKETING } from "./skills";
 
@@ -134,13 +134,26 @@ export async function runPrompts(): Promise<Answers> {
     }
   }
 
+  const deployTarget = bail(
+    await select({
+      message: "Deploy target",
+      options: [
+        { value: "vercel", label: "Vercel", hint: "default" },
+        { value: "cloudflare", label: "Cloudflare Pages" },
+        { value: "netlify", label: "Netlify" },
+        { value: "self-host", label: "Self-host (build artifact + rsync)" },
+      ],
+      initialValue: "vercel" as DeployTarget,
+    }),
+  ) as DeployTarget;
+
   const gitInit = bail(
     await confirm({ message: "Initialize a git repo with the first commit?", initialValue: true }),
   ) as boolean;
 
   return {
     projectName, frontend, analytics, personas, subscriptions,
-    agentMode, skillSet, customSkills, profile, cron, gitInit,
+    agentMode, skillSet, customSkills, profile, cron, deployTarget, gitInit,
   };
 }
 
