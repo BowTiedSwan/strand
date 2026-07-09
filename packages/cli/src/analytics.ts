@@ -30,12 +30,12 @@ export async function getAnalytics(ctx: Ctx, args: AnalyticsArgs) {
 
 async function plausible(ctx: Ctx, args: AnalyticsArgs) {
   const key = process.env.PLAUSIBLE_API_KEY;
-  const domain = ctx.analytics.domain ?? process.env.WISP_ANALYTICS_DOMAIN;
+  const domain = ctx.analytics.domain ?? process.env.STRAND_ANALYTICS_DOMAIN;
   if (!key || !domain) {
     return {
       provider: "plausible",
       configured: false,
-      note: "Set PLAUSIBLE_API_KEY and WISP_ANALYTICS_DOMAIN to enable reads.",
+      note: "Set PLAUSIBLE_API_KEY and STRAND_ANALYTICS_DOMAIN to enable reads.",
     };
   }
   const period = PERIOD[args.range];

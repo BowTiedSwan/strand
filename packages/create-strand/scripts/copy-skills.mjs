@@ -7,7 +7,7 @@ const repoSkills = join(here, "..", "..", "..", "skills");
 const dest = join(here, "..", "skills");
 rmSync(dest, { recursive: true, force: true });
 mkdirSync(dest, { recursive: true });
-for (const s of ["wisp-publish", "wisp-content-schema", "wisp-fact-check-cite"]) {
+for (const s of ["strand-publish", "strand-content-schema", "strand-fact-check-cite"]) {
   cpSync(join(repoSkills, s), join(dest, s), { recursive: true });
 }
-console.log("copied native skills -> packages/create-wisp/skills");
+console.log("copied native skills -> packages/create-strand/skills");

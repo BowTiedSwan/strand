@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { loadPosts, postPath } from "@wisp/core";
-import { POSTS, routes } from "@/lib/wisp";
+import { loadPosts, postPath } from "@strand/core";
+import { POSTS, routes } from "@/lib/strand";
 
 export function generateStaticParams() {
   const tags = new Set<string>();

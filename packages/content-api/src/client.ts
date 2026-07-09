@@ -2,17 +2,17 @@ import type { PostSummaryDTO, PostDTO, AuthorDTO, TagDTO } from "./types";
 import type { PostQuery } from "./api";
 
 /**
- * Typed client for the Wisp content API. Drop into any external frontend
+ * Typed client for the Strand content API. Drop into any external frontend
  * (React-bits, Astro, a mobile app) that consumes the JSON endpoints.
  *
- *   const wisp = createWispClient("https://site.com/api");
- *   const { posts } = await wisp.posts({ tag: "geo", limit: 10 });
+ *   const strand = createStrandClient("https://site.com/api");
+ *   const { posts } = await strand.posts({ tag: "geo", limit: 10 });
  */
-export function createWispClient(baseUrl: string, fetchImpl: typeof fetch = fetch) {
+export function createStrandClient(baseUrl: string, fetchImpl: typeof fetch = fetch) {
   const base = baseUrl.replace(/\/$/, "");
   const get = async <T>(path: string): Promise<T> => {
     const r = await fetchImpl(base + path);
-    if (!r.ok) throw new Error(`Wisp API ${r.status}: ${path}`);
+    if (!r.ok) throw new Error(`Strand API ${r.status}: ${path}`);
     return (await r.json()) as T;
   };
   const qs = (q: Record<string, unknown>) => {
@@ -28,7 +28,7 @@ export function createWispClient(baseUrl: string, fetchImpl: typeof fetch = fetc
     post: (slug: string) => get<PostDTO>(`/posts/${slug}`),
     postMarkdown: async (slug: string) => {
       const r = await fetchImpl(`${base}/posts/${slug}.md`);
-      if (!r.ok) throw new Error(`Wisp API ${r.status}`);
+      if (!r.ok) throw new Error(`Strand API ${r.status}`);
       return r.text();
     },
     tags: () => get<{ tags: TagDTO[] }>("/tags"),
@@ -39,4 +39,4 @@ export function createWispClient(baseUrl: string, fetchImpl: typeof fetch = fetc
   };
 }
 
-export type WispClient = ReturnType<typeof createWispClient>;
+export type StrandClient = ReturnType<typeof createStrandClient>;

@@ -1,10 +1,10 @@
 {
-  "name": "create-wisp",
+  "name": "create-strand",
   "version": "0.0.1",
-  "description": "Scaffold an agent-first Wisp publication.",
+  "description": "Scaffold an agent-first Strand publication.",
   "type": "module",
   "license": "MIT",
-  "bin": { "create-wisp": "./dist/index.js" },
+  "bin": { "create-strand": "./dist/index.js" },
   "files": ["dist", "skills"],
   "scripts": {
     "build": "tsup && node scripts/copy-skills.mjs",
@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.7.0",
-    "@wisp/core": "^0.0.1"
+    "@strand/core": "^0.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

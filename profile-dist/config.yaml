@@ -1,4 +1,4 @@
-# Wisp editor — Hermes profile config.
+# Strand editor — Hermes profile config.
 # Shipped as part of a profile distribution (SOUL + config + skills + cron + MCP).
 # Credentials, memories, and sessions stay per-machine (.env, state.db) — not in this repo.
 #
@@ -32,9 +32,9 @@ auxiliary:
 # Preload the editorial skill set every session (synced by resolve-skills.ts).
 skills:                   # (verify exact key/shape against Hermes config reference)
   preload:
-    - wisp-content-schema
-    - wisp-fact-check-cite
-    - wisp-publish
+    - strand-content-schema
+    - strand-fact-check-cite
+    - strand-publish
     - copywriting
     - copy-editing
     - content-strategy
@@ -47,9 +47,9 @@ skills:                   # (verify exact key/shape against Hermes config refere
 
 # Drive the CMS through structured tools rather than raw git.
 mcp_servers:              # (verify exact key/shape against Hermes integrations reference)
-  - name: wisp
+  - name: strand
     type: stdio
-    command: wisp
+    command: strand
     args: ["mcp"]
     # or type: url / url: http://localhost:8787/mcp for a long-running server
 

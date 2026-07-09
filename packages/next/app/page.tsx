@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { loadPosts, postPath, tagPath } from "@wisp/core";
-import { POSTS, routes, site } from "@/lib/wisp";
+import { loadPosts, postPath, tagPath } from "@strand/core";
+import { POSTS, routes, site } from "@/lib/strand";
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString("en", { year: "numeric", month: "short", day: "numeric" });

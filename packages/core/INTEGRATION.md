@@ -1,6 +1,6 @@
-# Wiring `@wisp/core` into Next.js (App Router)
+# Wiring `@strand/core` into Next.js (App Router)
 
-`@wisp/core` is framework-agnostic — it reads MDX and returns data + strings.
+`@strand/core` is framework-agnostic — it reads MDX and returns data + strings.
 These are the thin App Router files that turn it into a running site. Assumes
 `content/posts` and `content/authors` at the repo root and a `site.config.ts` /
 `routes.config.ts` exporting parsed `SiteConfig` / `RoutesConfig`.
@@ -8,10 +8,10 @@ These are the thin App Router files that turn it into a running site. Assumes
 Verified: the package typechecks (`tsc --noEmit`) and the loader + every generator
 run against real MDX (see the smoke test in the build notes).
 
-## Shared config — `lib/wisp.ts`
+## Shared config — `lib/strand.ts`
 
 ```ts
-import { SiteConfig, RoutesConfig } from "@wisp/core";
+import { SiteConfig, RoutesConfig } from "@strand/core";
 import { join } from "node:path";
 
 export const site = SiteConfig.parse((await import("@/site.config")).default);
@@ -24,8 +24,8 @@ export const AUTHORS = join(process.cwd(), "content/authors");
 
 ```ts
 import type { MetadataRoute } from "next";
-import { loadPosts, buildSitemap } from "@wisp/core";
-import { POSTS, site, routes } from "@/lib/wisp";
+import { loadPosts, buildSitemap } from "@strand/core";
+import { POSTS, site, routes } from "@/lib/strand";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return buildSitemap(loadPosts(POSTS), site, routes).map((e) => ({
@@ -41,7 +41,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
 ```ts
 import type { MetadataRoute } from "next";
-import { site } from "@/lib/wisp";
+import { site } from "@/lib/strand";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -54,8 +54,8 @@ export default function robots(): MetadataRoute.Robots {
 ## `app/feed.xml/route.ts`
 
 ```ts
-import { loadPosts, buildRss } from "@wisp/core";
-import { POSTS, site, routes } from "@/lib/wisp";
+import { loadPosts, buildRss } from "@strand/core";
+import { POSTS, site, routes } from "@/lib/strand";
 
 export function GET() {
   const xml = buildRss(loadPosts(POSTS), site, routes);
@@ -66,8 +66,8 @@ export function GET() {
 ## `app/llms.txt/route.ts` (and `llms-full.txt`)
 
 ```ts
-import { loadPosts, loadAuthors, buildLlmsTxt, buildLlmsFullTxt } from "@wisp/core";
-import { POSTS, AUTHORS, site, routes } from "@/lib/wisp";
+import { loadPosts, loadAuthors, buildLlmsTxt, buildLlmsFullTxt } from "@strand/core";
+import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 
 export function GET() {
   const body = buildLlmsTxt(loadPosts(POSTS), site, routes);
@@ -80,8 +80,8 @@ export function GET() {
 
 ```tsx
 import { notFound } from "next/navigation";
-import { loadPost, loadAuthor, buildMetadata, postGraph } from "@wisp/core";
-import { POSTS, AUTHORS, site, routes } from "@/lib/wisp";
+import { loadPost, loadAuthor, buildMetadata, postGraph } from "@strand/core";
+import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 // import your MDX renderer (next-mdx-remote / @next/mdx) for post.body
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
@@ -139,8 +139,8 @@ export default nextConfig;
 
 ```ts
 import type { NextRequest } from "next/server";
-import { loadPost, loadAuthor, loadPosts, renderPostMarkdown } from "@wisp/core";
-import { POSTS, AUTHORS, site, routes } from "@/lib/wisp";
+import { loadPost, loadAuthor, loadPosts, renderPostMarkdown } from "@strand/core";
+import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 
 export const dynamic = "force-static";
 
@@ -171,6 +171,6 @@ same check in middleware and rewrite to this handler when the header is present.
 
 ## Headless mode
 
-Skip the page components. Ship `lib/wisp.ts` + `loadPosts`/`loadPost` as a typed
+Skip the page components. Ship `lib/strand.ts` + `loadPosts`/`loadPost` as a typed
 content package, or expose a JSON route (`app/api/posts/route.ts` returning
 `loadPosts(POSTS)`) for an external React/Astro frontend to consume.

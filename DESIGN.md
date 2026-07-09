@@ -1,13 +1,13 @@
-# Wisp — Design
+# Strand — Design
 
-> **Wisp** *(working name — a lighter, smaller thing than a Ghost; find-and-replace freely)*
+> **Strand** *(working name — a lighter, smaller thing than a Ghost; find-and-replace freely)*
 > An agent-first, minimal, open-source publishing system for **programmatic blogs and news sites**. Articles are MDX files in Git, written and optimized by agents, rendered by a deployable frontend with SEO + AI-search (GEO) baked into core. No database, no CMS UI, no human-editor bloat.
 
 ---
 
 ## 1. Thesis
 
-Ghost is a 44k-commit Node.js/MySQL monolith built around human editors: an Ember admin client, a Lexical WYSIWYG editor, members/subscriptions, newsletters, Handlebars themes, a theme marketplace. The genuinely valuable ~15% is its **content schema** and its **publishing-quality core** (sitemaps, JSON-LD, canonical tags, OG/Twitter cards, RSS). Wisp keeps that core, replaces the editor with **agents + skills**, replaces the database with **Git + MDX**, and extends the SEO core for **AI search engines**.
+Ghost is a 44k-commit Node.js/MySQL monolith built around human editors: an Ember admin client, a Lexical WYSIWYG editor, members/subscriptions, newsletters, Handlebars themes, a theme marketplace. The genuinely valuable ~15% is its **content schema** and its **publishing-quality core** (sitemaps, JSON-LD, canonical tags, OG/Twitter cards, RSS). Strand keeps that core, replaces the editor with **agents + skills**, replaces the database with **Git + MDX**, and extends the SEO core for **AI search engines**.
 
 | Kept from Ghost (re-implemented) | Cut entirely | Replaced by |
 |---|---|---|
@@ -30,7 +30,7 @@ flowchart TB
     subgraph Agents["② Agent layer"]
         direction LR
         SK["Skills<br/>(marketing pack + native)"]
-        MCP["Wisp MCP server<br/>(structured tools)"]
+        MCP["Strand MCP server<br/>(structured tools)"]
         HP["Hermes editor profile<br/>(optional, separate)"]
         HP -->|consumes| SK
         HP -->|calls| MCP
@@ -54,7 +54,7 @@ flowchart TB
         SR["search"]
     end
 
-    CLI["⑤ create-wisp CLI<br/>+ paid managed Cloud"]
+    CLI["⑤ create-strand CLI<br/>+ paid managed Cloud"]
 
     MCP -->|create_draft / update / publish| GIT
     SK -.guides.-> MCP
@@ -76,7 +76,7 @@ flowchart TB
 sequenceDiagram
     participant A as Agent (CLI or Hermes)
     participant S as Skills
-    participant M as Wisp MCP
+    participant M as Strand MCP
     participant G as Git/GitHub
     participant CI as CI
     participant D as Deploy
@@ -100,16 +100,16 @@ sequenceDiagram
 ## 3. Layers
 
 1. **Content layer.** MDX in Git is the database, version history, audit log, and review workflow. `content/posts/*.mdx`, `content/authors/*.mdx`, one `site.config.ts`, one `routes.config.ts`. A Zod schema (§4) validates frontmatter in a pre-commit hook and in CI — a malformed article literally cannot merge. This is the only surface agents write to.
-2. **Agent layer.** Portable **skills** (the how-to knowledge) + a **Wisp MCP server** (the structured tool surface, §6) + an optional **Hermes editor profile** (a separate agent that owns the publication, §7).
+2. **Agent layer.** Portable **skills** (the how-to knowledge) + a **Strand MCP server** (the structured tool surface, §6) + an optional **Hermes editor profile** (a separate agent that owns the publication, §7).
 3. **Rendering layer.** Next.js App Router, static-first. Reads MDX, renders the site, and emits every SEO/GEO artifact at build. **Headless mode** swaps the rendered site for a typed content package + read-only JSON Content API consumed by an existing frontend.
 4. **Adapters (opt-in).** analytics (cookieless-first), subscriptions/forms, storage/CDN, search, deploy target. Each is a small interface implementation selected at scaffold time.
-5. **CLI + Cloud.** `create-wisp` interactive scaffolder; optional paid managed hosting (Git sync + hosted agent runtime + analytics) as the open-core business model.
+5. **CLI + Cloud.** `create-strand` interactive scaffolder; optional paid managed hosting (Git sync + hosted agent runtime + analytics) as the open-core business model.
 
 ---
 
 ## 4. Content model (the contract)
 
-Single source of truth for frontmatter. Lives at `packages/core/schema.ts`; the `wisp-content-schema` skill and the MCP `validate_post` tool both import it.
+Single source of truth for frontmatter. Lives at `packages/core/schema.ts`; the `strand-content-schema` skill and the MCP `validate_post` tool both import it.
 
 ```ts
 import { z } from "zod";
@@ -176,10 +176,10 @@ export type PostFrontmatter = z.infer<typeof PostFrontmatter>;
 
 ### Native skills (not covered by the pack — shipped in `skills/`)
 
-These operate Wisp's own mechanics, so they can't be borrowed:
-- **`wisp-publish`** — commit MDX, open a PR, never push main, trigger deploy. → `skills/wisp-publish/SKILL.md`
-- **`wisp-content-schema`** — write/repair frontmatter so it validates against §4. → `skills/wisp-content-schema/SKILL.md`
-- **`wisp-fact-check-cite`** — verify factual claims, attach sources, populate `sources[]`. → `skills/wisp-fact-check-cite/SKILL.md`
+These operate Strand's own mechanics, so they can't be borrowed:
+- **`strand-publish`** — commit MDX, open a PR, never push main, trigger deploy. → `skills/strand-publish/SKILL.md`
+- **`strand-content-schema`** — write/repair frontmatter so it validates against §4. → `skills/strand-content-schema/SKILL.md`
+- **`strand-fact-check-cite`** — verify factual claims, attach sources, populate `sources[]`. → `skills/strand-fact-check-cite/SKILL.md`
 
 Default install = 9 mandatory marketing skills + 3 native skills. The installer **diffs against already-installed skills and installs only the gap** (see `skills/resolve-skills.ts`).
 
@@ -187,8 +187,8 @@ Default install = 9 mandatory marketing skills + 3 native skills. The installer 
 
 ## 7. Agent integration modes
 
-- **Skills + CLI** — marketing skills installed into the terminal coding agent (Claude Code / Cursor, via `npx skills add`) + the Wisp CLI. Human-in-the-loop, no long-running agent.
-- **Skills + MCP** — the Wisp MCP server runs; any MCP-capable agent calls the structured tools, skills supply the how-to. Headless / programmatic.
+- **Skills + CLI** — marketing skills installed into the terminal coding agent (Claude Code / Cursor, via `npx skills add`) + the Strand CLI. Human-in-the-loop, no long-running agent.
+- **Skills + MCP** — the Strand MCP server runs; any MCP-capable agent calls the structured tools, skills supply the how-to. Headless / programmatic.
 - **Both** — both of the above, and the mode that unlocks the optional **dedicated Hermes editor profile**.
 
 ### The Hermes editor profile (optional)
@@ -201,7 +201,7 @@ A Hermes *profile* is its own home directory (own `config.yaml`, `.env`, `SOUL.m
 | `terminal.cwd` | → the blog repo path (the separation) |
 | toolsets `web,terminal,skills` | research · git/build · marketing pack |
 | skills | the 9+3 set, synced after dedup |
-| Wisp MCP connection | drive the CMS via structured tools, not raw git |
+| Strand MCP connection | drive the CMS via structured tools, not raw git |
 | cron (optional) | scheduled "draft the news" cadence |
 | gateway (optional) | manage the publication from Telegram/Discord |
 
@@ -212,7 +212,7 @@ A Hermes *profile* is its own home directory (own `config.yaml`, `.env`, `SOUL.m
 ## 8. CLI flow
 
 ```
-$ npm create wisp@latest
+$ npm create strand@latest
 ? Project name › my-news-site
 ? Frontend › Next.js (App Router) / Headless (content package only) / Astro
 ? Analytics › Plausible (cookieless, default) / Umami / GA4 / PostHog / None
@@ -236,19 +236,19 @@ AI-search/GEO is not a question — it is always on.
 ## 9. Repo layout
 
 ```
-wisp/
+strand/
 ├── DESIGN.md                        ← this file
 ├── packages/
-│   ├── core/        @wisp/core — schema, MDX loader, SEO/GEO generators  [built]
-│   ├── create-wisp/ the `npm create wisp` scaffolder                     [built]
-│   ├── cli/         @wisp/cli — `wisp` bin: MCP server + `wisp validate`  [built]
+│   ├── core/        @strand/core — schema, MDX loader, SEO/GEO generators  [built]
+│   ├── create-strand/ the `npm create strand` scaffolder                     [built]
+│   ├── cli/         @strand/cli — `strand` bin: MCP server + `strand validate`  [built]
 │   │                  src/tools.ts is the canonical MCP tool surface
-│   ├── next/        @wisp/next — default theme (wisp rail, MDX, SEO/GEO)      [built]
-│   └── content-api/ @wisp/content-api — typed queries + JSON API + client    [built]
+│   ├── next/        @strand/next — default theme (strand rail, MDX, SEO/GEO)      [built]
+│   └── content-api/ @strand/content-api — typed queries + JSON API + client    [built]
 ├── skills/
-│   ├── wisp-publish/SKILL.md
-│   ├── wisp-content-schema/SKILL.md
-│   ├── wisp-fact-check-cite/SKILL.md
+│   ├── strand-publish/SKILL.md
+│   ├── strand-content-schema/SKILL.md
+│   ├── strand-fact-check-cite/SKILL.md
 │   └── resolve-skills.ts            ← standalone reference resolver
 └── profile-dist/                    ← reference Hermes editor distribution
     ├── SOUL.md
@@ -268,5 +268,5 @@ wisp/
   sync + analytics + on-merge deploy. Open-core; 100% of the publishing core stays MIT.
 - **Per-skill vs whole-pack install:** skills.sh exposes per-skill URLs; resolver assumes per-skill `add` with a whole-pack fallback (confirm against the skills.sh CLI).
 - **Hermes config keys:** `model`, `provider`, `toolsets`, `terminal.cwd`, `compression` are confirmed from docs; `cron` and MCP-connection keys are represented best-effort in `profile-dist/config.yaml` — verify against the Hermes configuration/integrations reference before shipping.
-- **Published-package assumption:** a scaffolded project depends on `@wisp/*` from npm, so its CI `npm ci` needs those packages published (they resolve via the workspace in this monorepo). Publish `@wisp/core`/`@wisp/cli`/`@wisp/content-api` before the generated CI is green on a clean runner.
+- **Published-package assumption:** a scaffolded project depends on `@strand/*` from npm, so its CI `npm ci` needs those packages published (they resolve via the workspace in this monorepo). Publish `@strand/core`/`@strand/cli`/`@strand/content-api` before the generated CI is green on a clean runner.
 - **Scheduled posts:** `status: scheduled` + `publishedAt` in the future, resolved at build by a scheduled CI run (or the editor profile's cron).

@@ -38,13 +38,13 @@ export function scaffold(a: Answers, opts: ScaffoldOptions = {}): ScaffoldResult
   w("tsconfig.json", t.tsconfig());
   w("site.config.ts", t.siteConfig(a));
   w("routes.config.ts", t.routesConfig());
-  w("lib/wisp.ts", t.libWisp());
+  w("lib/strand.ts", t.libStrand());
   w("scripts/validate.mjs", t.validateScript());
   w(".github/workflows/validate.yml", t.ciWorkflow());
   const deploy = t.deployWorkflow(a);
   if (deploy) w(".github/workflows/deploy.yml", deploy);
   w("README.md", t.readme(a));
-  w("wisp.json", t.wispJson(a));
+  w("strand.json", t.strandJson(a));
 
   /* ---- content ---- */
   const author = t.sampleAuthor(a);
@@ -68,13 +68,13 @@ export function scaffold(a: Answers, opts: ScaffoldOptions = {}): ScaffoldResult
     if (analytics) w("components/Analytics.tsx", analytics);
   } else if (a.frontend === "headless") {
     notes.push(
-      "Headless mode: no app/ scaffolded. Import loadPosts/loadPost from @wisp/core in your " +
-        "own frontend, or expose content via a JSON route. lib/wisp.ts is ready to use.",
+      "Headless mode: no app/ scaffolded. Import loadPosts/loadPost from @strand/core in your " +
+        "own frontend, or expose content via a JSON route. lib/strand.ts is ready to use.",
     );
   } else if (a.frontend === "astro") {
     notes.push(
-      "Astro selected: config + content + validation are scaffolded; wire @wisp/core into your " +
-        "Astro pages (the generators are framework-agnostic — see @wisp/core/INTEGRATION.md).",
+      "Astro selected: config + content + validation are scaffolded; wire @strand/core into your " +
+        "Astro pages (the generators are framework-agnostic — see @strand/core/INTEGRATION.md).",
     );
   }
 
@@ -117,7 +117,7 @@ export function scaffold(a: Answers, opts: ScaffoldOptions = {}): ScaffoldResult
     join(import.meta.dirname, "..", "skills"),
     join(import.meta.dirname, "..", "..", "skills"),
     join(import.meta.dirname, "..", "..", "..", "skills"),
-  ].find((p) => existsSync(join(p, "wisp-publish"))) ?? join(import.meta.dirname, "..", "skills");
+  ].find((p) => existsSync(join(p, "strand-publish"))) ?? join(import.meta.dirname, "..", "skills");
   const skills = syncSkills(a, dir, nativeSrc, opts.dryRun);
 
   /* ---- git init ---- */
@@ -125,7 +125,7 @@ export function scaffold(a: Answers, opts: ScaffoldOptions = {}): ScaffoldResult
     try {
       execSync("git init -q", { cwd: dir });
       execSync("git add -A", { cwd: dir });
-      execSync('git commit -q -m "chore: scaffold Wisp site"', { cwd: dir });
+      execSync('git commit -q -m "chore: scaffold Strand site"', { cwd: dir });
     } catch { notes.push("git init skipped (git not available or commit failed)."); }
   }
 

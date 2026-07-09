@@ -9,7 +9,7 @@ export function gitignore(): string {
 }
 
 export function projectPackageJson(a: Answers): string {
-  const deps: Record<string, string> = { "@wisp/core": "^0.0.1" };
+  const deps: Record<string, string> = { "@strand/core": "^0.0.1" };
   if (a.frontend === "next") {
     Object.assign(deps, {
       next: "^16.2.9", react: "^19.2.7", "react-dom": "^19.2.7",
@@ -81,12 +81,12 @@ export default withMDX(nextConfig);
 }
 
 export function siteConfig(a: Answers): string {
-  return `import type { SiteConfig } from "@wisp/core";
+  return `import type { SiteConfig } from "@strand/core";
 
 const config = {
   name: "${a.projectName}",
   url: "https://example.com",        // ← set your production origin (no trailing slash)
-  description: "A programmatic publication built with Wisp.",
+  description: "A programmatic publication built with Strand.",
   locale: "en",
   defaultAuthor: "${persona(a)}",
   organization: { name: "${a.projectName}" },
@@ -97,7 +97,7 @@ export default config;
 }
 
 export function routesConfig(): string {
-  return `import type { RoutesConfig } from "@wisp/core";
+  return `import type { RoutesConfig } from "@strand/core";
 
 const routes = {
   post: "/blog/{slug}",
@@ -109,8 +109,8 @@ export default routes;
 `;
 }
 
-export function libWisp(): string {
-  return `import { SiteConfig, RoutesConfig } from "@wisp/core";
+export function libStrand(): string {
+  return `import { SiteConfig, RoutesConfig } from "@strand/core";
 import { join } from "node:path";
 import siteCfg from "@/site.config";
 import routesCfg from "@/routes.config";
@@ -146,22 +146,22 @@ export function samplePost(a: Answers): { file: string; body: string } {
   return {
     file: "hello-world.mdx",
     body: `---
-title: "Hello, world — your first Wisp post"
+title: "Hello, world — your first Strand post"
 slug: hello-world
-description: "A starter post showing the frontmatter contract, SEO fields, and the AI-search (GEO) fields Wisp emits automatically."
+description: "A starter post showing the frontmatter contract, SEO fields, and the AI-search (GEO) fields Strand emits automatically."
 publishedAt: "${today}"
 status: published
 author: ${persona(a)}
 type: BlogPosting
 tags: [meta, getting-started]
-summary: "This starter post demonstrates Wisp's schema: title, description, summary (TL;DR), FAQ, and sources — all of which feed SEO and AI-search output."
+summary: "This starter post demonstrates Strand's schema: title, description, summary (TL;DR), FAQ, and sources — all of which feed SEO and AI-search output."
 faq:
-  - q: "What is Wisp?"
+  - q: "What is Strand?"
     a: "An agent-first publishing system: articles are MDX in Git, written by agents, with SEO and AI-search built in."
 sources: []
 ---
 
-Welcome to your new Wisp site. Replace this post with your own — or let an agent write it.
+Welcome to your new Strand site. Replace this post with your own — or let an agent write it.
 
 The frontmatter above is validated on commit. The \`summary\`, \`faq\`, and \`sources\`
 fields are what make your content legible to AI search engines.
@@ -190,9 +190,9 @@ ${analyticsTag}        {children}
 
 export function appIndex(): string {
   return `import Link from "next/link";
-import { loadPosts } from "@wisp/core";
-import { POSTS, routes } from "@/lib/wisp";
-import { postPath } from "@wisp/core";
+import { loadPosts } from "@strand/core";
+import { POSTS, routes } from "@/lib/strand";
+import { postPath } from "@strand/core";
 
 export default function Home() {
   const posts = loadPosts(POSTS);
@@ -215,8 +215,8 @@ export default function Home() {
 
 export function appBlogSlugPage(): string {
   return `import { notFound } from "next/navigation";
-import { loadPost, loadAuthor, buildMetadata, postGraph } from "@wisp/core";
-import { POSTS, AUTHORS, site, routes } from "@/lib/wisp";
+import { loadPost, loadAuthor, buildMetadata, postGraph } from "@strand/core";
+import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -249,8 +249,8 @@ export default async function Page({ params }: Params) {
 
 export function appBlogSlugMd(): string {
   return `import type { NextRequest } from "next/server";
-import { loadPost, loadAuthor, loadPosts, renderPostMarkdown } from "@wisp/core";
-import { POSTS, AUTHORS, site, routes } from "@/lib/wisp";
+import { loadPost, loadAuthor, loadPosts, renderPostMarkdown } from "@strand/core";
+import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 
 export const dynamic = "force-static";
 
@@ -282,8 +282,8 @@ export async function GET(
 
 export function appSitemap(): string {
   return `import type { MetadataRoute } from "next";
-import { loadPosts, buildSitemap } from "@wisp/core";
-import { POSTS, site, routes } from "@/lib/wisp";
+import { loadPosts, buildSitemap } from "@strand/core";
+import { POSTS, site, routes } from "@/lib/strand";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return buildSitemap(loadPosts(POSTS), site, routes).map((e) => ({
@@ -296,7 +296,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
 export function appRobots(): string {
   return `import type { MetadataRoute } from "next";
-import { site } from "@/lib/wisp";
+import { site } from "@/lib/strand";
 
 export default function robots(): MetadataRoute.Robots {
   return { rules: [{ userAgent: "*", allow: "/" }], sitemap: \`\${site.url}/sitemap.xml\` };
@@ -305,8 +305,8 @@ export default function robots(): MetadataRoute.Robots {
 }
 
 export function appFeed(): string {
-  return `import { loadPosts, buildRss } from "@wisp/core";
-import { POSTS, site, routes } from "@/lib/wisp";
+  return `import { loadPosts, buildRss } from "@strand/core";
+import { POSTS, site, routes } from "@/lib/strand";
 
 export function GET() {
   return new Response(buildRss(loadPosts(POSTS), site, routes), {
@@ -317,8 +317,8 @@ export function GET() {
 }
 
 export function appLlms(): string {
-  return `import { loadPosts, buildLlmsTxt } from "@wisp/core";
-import { POSTS, site, routes } from "@/lib/wisp";
+  return `import { loadPosts, buildLlmsTxt } from "@strand/core";
+import { POSTS, site, routes } from "@/lib/strand";
 
 export function GET() {
   return new Response(buildLlmsTxt(loadPosts(POSTS), site, routes), {
@@ -329,8 +329,8 @@ export function GET() {
 }
 
 export function appLlmsFull(): string {
-  return `import { loadPosts, loadAuthors, buildLlmsFullTxt } from "@wisp/core";
-import { POSTS, AUTHORS, site, routes } from "@/lib/wisp";
+  return `import { loadPosts, loadAuthors, buildLlmsFullTxt } from "@strand/core";
+import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 
 export function GET() {
   return new Response(
@@ -424,7 +424,7 @@ ${map[a.subscriptions]}
 export function validateScript(): string {
   return `import { readdirSync } from "node:fs";
 import { join } from "node:path";
-import { validatePostFile } from "@wisp/core";
+import { validatePostFile } from "@strand/core";
 
 const dir = join(process.cwd(), "content/posts");
 let bad = 0;
@@ -543,9 +543,9 @@ jobs:
 
 export function preCommitHook(): string {
   return `#!/bin/sh
-# Wisp: block commits that contain invalid post frontmatter.
+# Strand: block commits that contain invalid post frontmatter.
 npm run validate || {
-  echo "Commit blocked: fix the post(s) above (or use the wisp-content-schema skill)."
+  echo "Commit blocked: fix the post(s) above (or use the strand-content-schema skill)."
   exit 1
 }
 `;
@@ -560,16 +560,16 @@ export function soulMd(a: Answers): string {
       : "- `staff` — the single house byline.";
   return `# SOUL — ${a.projectName} Editor
 
-You are the editor of ${a.projectName}, a Wisp publication. You research, write,
+You are the editor of ${a.projectName}, a Strand publication. You research, write,
 optimize, and publish articles to a Git-backed MDX blog. You operate inside the
 blog repo (your \`terminal.cwd\`) but are a separate agent from the repo itself.
 
 ## How you work
 - **Satisfy the schema first.** Before publishing, every post must pass \`npm run validate\`
-  (or the MCP \`validate_post\` tool). Use \`wisp-content-schema\` to write/repair frontmatter.
-- **Publish through PRs only.** Use \`wisp-publish\`. Branch per post, open a PR, let CI run.
+  (or the MCP \`validate_post\` tool). Use \`strand-content-schema\` to write/repair frontmatter.
+- **Publish through PRs only.** Use \`strand-publish\`. Branch per post, open a PR, let CI run.
   Never push to \`main\`, never force-push. Unpublish = \`noindex: true\` + \`status: draft\`.
-- **Cite everything factual.** Use \`wisp-fact-check-cite\`: verify against primary sources,
+- **Cite everything factual.** Use \`strand-fact-check-cite\`: verify against primary sources,
   cite inline, populate \`sources[]\`. **Never invent a source, URL, statistic, or quote.**
 - **Optimize for Google and AI search.** Lead with the answer. Fill \`summary\` and 2–5 \`faq\`
   pairs, set \`type\` (\`NewsArticle\` for time-sensitive), and add internal links.
@@ -581,7 +581,7 @@ Clear, concrete, plain language. No hype. Explain, cite, move on.
 ${personas}
 
 ## Boundaries
-You may research the web, edit repo files, run git, and call Wisp MCP tools. You do not
+You may research the web, edit repo files, run git, and call Strand MCP tools. You do not
 change infrastructure, secrets, billing, or access controls. If you can't stand behind a
 claim, stop and ask.
 `;
@@ -612,9 +612,9 @@ compression:
 
 skills:                 # (verify key/shape)
   preload:
-    - wisp-content-schema
-    - wisp-fact-check-cite
-    - wisp-publish
+    - strand-content-schema
+    - strand-fact-check-cite
+    - strand-publish
     - copywriting
     - copy-editing
     - content-strategy
@@ -626,9 +626,9 @@ skills:                 # (verify key/shape)
     - analytics-tracking
 
 mcp_servers:            # (verify key/shape)
-  - name: wisp
+  - name: strand
     type: stdio
-    command: wisp
+    command: strand
     args: ["mcp"]
 
 cron:                   # (verify key/shape)
@@ -642,7 +642,7 @@ cron:                   # (verify key/shape)
 }
 
 export function profileReadme(a: Answers): string {
-  return `# ${a.projectName}-editor (Wisp editor — Hermes profile distribution)
+  return `# ${a.projectName}-editor (Strand editor — Hermes profile distribution)
 
 Install on any machine:
 
@@ -668,7 +668,7 @@ export function readme(a: Answers): string {
     : "Skills + MCP + CLI";
   return `# ${a.projectName}
 
-An agent-first publication built with **Wisp**. Articles are MDX in \`content/posts\`,
+An agent-first publication built with **Strand**. Articles are MDX in \`content/posts\`,
 validated on commit, rendered by ${a.frontend === "next" ? "Next.js" : a.frontend} with
 SEO and AI-search (GEO) built in.
 
@@ -686,10 +686,10 @@ ${a.frontend === "next" ? "npm run dev\n" : ""}npm run validate     # check all 
 \`\`\`
 
 ## Write a post
-Add \`content/posts/<slug>.mdx\` with valid frontmatter (the \`wisp-content-schema\` skill
-does this), then \`npm run validate\`. The \`wisp-publish\` skill opens the PR.
+Add \`content/posts/<slug>.mdx\` with valid frontmatter (the \`strand-content-schema\` skill
+does this), then \`npm run validate\`. The \`strand-publish\` skill opens the PR.
 
-## What Wisp emits automatically
+## What Strand emits automatically
 \`sitemap.xml\`, \`robots.txt\`, \`feed.xml\`, \`llms.txt\`, \`llms-full.txt\`, per-post JSON-LD
 (Article/FAQPage/speakable + author entity), and a clean \`.md\` version of every post at
 \`/blog/<slug>.md\` for AI crawlers.
@@ -712,6 +712,6 @@ the repo in the ${a.deployTarget} dashboard is the zero-config alternative.`}
 `;
 }
 
-export function wispJson(a: Answers): string {
-  return JSON.stringify({ wisp: "0.0.1", ...a }, null, 2) + "\n";
+export function strandJson(a: Answers): string {
+  return JSON.stringify({ strand: "0.0.1", ...a }, null, 2) + "\n";
 }

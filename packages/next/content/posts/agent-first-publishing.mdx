@@ -7,9 +7,9 @@ status: published
 author: staff
 type: BlogPosting
 tags: [meta, architecture, geo]
-summary: "Agent-written content shifts the value of a CMS from the editor UI to the schema and the pipeline. Wisp keeps the schema, the SEO core, and Git — and drops the rest."
+summary: "Agent-written content shifts the value of a CMS from the editor UI to the schema and the pipeline. Strand keeps the schema, the SEO core, and Git — and drops the rest."
 faq:
-  - q: "Does Wisp have an admin interface?"
+  - q: "Does Strand have an admin interface?"
     a: "No. Agents write MDX against a validated schema; Git is the review workflow and the audit log."
   - q: "How does this help with AI search?"
     a: "Every page ships llms.txt, a clean .md version, FAQ and speakable schema, and cited sources — the signals AI search engines reward."
@@ -30,7 +30,7 @@ product. What matters is the **contract** the agent writes against.
 A strict, validated schema is more important when a machine is writing, not less. It is
 the interface between the agent and the publication.
 
-<Callout>In Wisp, a post that fails schema validation cannot be committed — CI is the editor's red pen.</Callout>
+<Callout>In Strand, a post that fails schema validation cannot be committed — CI is the editor's red pen.</Callout>
 
 ## Git replaces the database
 

@@ -1,11 +1,11 @@
 ---
-name: wisp-content-schema
-description: Write or repair the frontmatter of a Wisp article so it validates and is correctly structured for SEO and AI-search. Use this whenever creating a new Wisp post, editing an existing post's frontmatter, or before publishing — and whenever a validation error mentions frontmatter, schema, slug, meta description, or required fields. Use it even when the user just asks to "write an article for the blog", because the frontmatter contract must be satisfied for the post to publish at all.
+name: strand-content-schema
+description: Write or repair the frontmatter of a Strand article so it validates and is correctly structured for SEO and AI-search. Use this whenever creating a new Strand post, editing an existing post's frontmatter, or before publishing — and whenever a validation error mentions frontmatter, schema, slug, meta description, or required fields. Use it even when the user just asks to "write an article for the blog", because the frontmatter contract must be satisfied for the post to publish at all.
 ---
 
-# wisp-content-schema
+# strand-content-schema
 
-Every Wisp post is an MDX file at `content/posts/<slug>.mdx` whose YAML frontmatter must satisfy `PostFrontmatter` (defined in `packages/core/schema.ts`). A post that does not validate cannot be committed or merged. Write frontmatter to pass on the first try, then self-check with `wisp validate <slug>` or the MCP `validate_post` tool.
+Every Strand post is an MDX file at `content/posts/<slug>.mdx` whose YAML frontmatter must satisfy `PostFrontmatter` (defined in `packages/core/schema.ts`). A post that does not validate cannot be committed or merged. Write frontmatter to pass on the first try, then self-check with `strand validate <slug>` or the MCP `validate_post` tool.
 
 ## Required vs optional fields
 
@@ -27,7 +27,7 @@ Every Wisp post is an MDX file at `content/posts/<slug>.mdx` whose YAML frontmat
 - `summary` — a ≤280-char TL;DR. It powers `speakable` schema and is the snippet AI search engines extract. Lead with the answer.
 - `type` — use `NewsArticle` for time-sensitive news, `BlogPosting` otherwise. This drives the JSON-LD type.
 - `faq` — 2–5 genuine question/answer pairs that match how people actually query. Emitted as `FAQPage` schema and frequently surfaced verbatim by AI search.
-- `sources` — every external factual claim should map to an entry here (see `wisp-fact-check-cite`). Cited posts are trusted more by both Google and LLMs.
+- `sources` — every external factual claim should map to an entry here (see `strand-fact-check-cite`). Cited posts are trusted more by both Google and LLMs.
 
 ## Example
 
@@ -51,4 +51,4 @@ sources:
 ---
 ```
 
-After writing frontmatter, always run validation and fix any reported field before handing off to `wisp-publish`.
+After writing frontmatter, always run validation and fix any reported field before handing off to `strand-publish`.

@@ -1,4 +1,4 @@
-import type { PostFrontmatter } from "@wisp/core";
+import type { PostFrontmatter } from "@strand/core";
 
 export interface PostSummaryDTO {
   slug: string;

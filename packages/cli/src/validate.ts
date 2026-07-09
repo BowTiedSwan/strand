@@ -1,8 +1,8 @@
 import { readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { validatePostFile } from "@wisp/core";
+import { validatePostFile } from "@strand/core";
 
-/** `wisp validate [dir]` — validate every post's frontmatter; exit 1 on any failure. */
+/** `strand validate [dir]` — validate every post's frontmatter; exit 1 on any failure. */
 export function validateCli(dir?: string): void {
   const postsDir = dir ?? join(process.cwd(), "content/posts");
   if (!existsSync(postsDir)) {

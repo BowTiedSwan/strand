@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
  * tracks reading progress. Structural anchors (passed as ratios 0–1) render as
  * nodes the light reaches as you read. Honors prefers-reduced-motion via CSS.
  */
-export default function WispRail({ anchors = [] as number[] }) {
+export default function StrandRail({ anchors = [] as number[] }) {
   const [progress, setProgress] = useState(0);
   const ticking = useRef(false);
 

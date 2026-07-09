@@ -29,7 +29,7 @@ export const MARKETING = {
   ],
 } as const;
 
-export const NATIVE = ["wisp-publish", "wisp-content-schema", "wisp-fact-check-cite"] as const;
+export const NATIVE = ["strand-publish", "strand-content-schema", "strand-fact-check-cite"] as const;
 
 export type Target =
   | { kind: "skills.sh"; dir: string }

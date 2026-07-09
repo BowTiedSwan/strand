@@ -1,11 +1,11 @@
 ---
-name: wisp-fact-check-cite
-description: Verify factual claims in a Wisp article, attach real sources, and populate the sources[] frontmatter and inline citations. Use this whenever drafting or editing factual, news, statistical, or "X vs Y" content — and whenever an article makes claims about numbers, dates, events, people, prices, laws, or studies. Use it before publishing any NewsArticle. Trust signals from real citations are a core ranking factor for both Google and AI search engines, so do not skip this for factual posts even if the user did not explicitly ask for fact-checking.
+name: strand-fact-check-cite
+description: Verify factual claims in a Strand article, attach real sources, and populate the sources[] frontmatter and inline citations. Use this whenever drafting or editing factual, news, statistical, or "X vs Y" content — and whenever an article makes claims about numbers, dates, events, people, prices, laws, or studies. Use it before publishing any NewsArticle. Trust signals from real citations are a core ranking factor for both Google and AI search engines, so do not skip this for factual posts even if the user did not explicitly ask for fact-checking.
 ---
 
-# wisp-fact-check-cite
+# strand-fact-check-cite
 
-Programmatic blogs lose to fabrication. This skill makes every factual claim in a Wisp post traceable to a real source, which is both an ethics floor and a ranking advantage — Google's E-E-A-T and LLM search engines both up-weight cited, verifiable content.
+Programmatic blogs lose to fabrication. This skill makes every factual claim in a Strand post traceable to a real source, which is both an ethics floor and a ranking advantage — Google's E-E-A-T and LLM search engines both up-weight cited, verifiable content.
 
 ## Process
 
@@ -20,7 +20,7 @@ Programmatic blogs lose to fabrication. This skill makes every factual claim in 
 - **Never invent a source, URL, statistic, date, or quote.** A plausible-looking fake citation is the worst possible failure for this project.
 - A live URL you actually retrieved beats a half-remembered citation every time — fetch it.
 - Quotes are last resort and kept short; paraphrase and attribute instead.
-- For `NewsArticle` posts, sourcing is mandatory before `wisp-publish` runs.
+- For `NewsArticle` posts, sourcing is mandatory before `strand-publish` runs.
 - Prefer dated sources for time-sensitive claims, and note "as of <date>" when a figure can change.
 
 ## Output

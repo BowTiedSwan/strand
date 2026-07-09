@@ -1,5 +1,5 @@
 {
-  "name": "wisp-monorepo",
+  "name": "strand-monorepo",
   "private": true,
   "type": "module",
   "workspaces": ["packages/*"]
