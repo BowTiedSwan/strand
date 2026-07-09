@@ -5,5 +5,5 @@ export default defineConfig({
   dts: true,
   clean: true,
   target: "es2022",
-  external: ["@wisp/core"],
+  external: ["@strand/core"],
 });

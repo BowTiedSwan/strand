@@ -11,25 +11,25 @@ export interface Ctx {
 
 /**
  * Resolve context from the blog repo the server runs in (terminal.cwd).
- * Provider comes from wisp.json; secrets/domain come from env so they never
+ * Provider comes from strand.json; secrets/domain come from env so they never
  * live in the repo.
  */
 export function loadCtx(cwd: string = process.cwd()): Ctx {
-  let provider = process.env.WISP_ANALYTICS ?? "none";
-  const wj = join(cwd, "wisp.json");
+  let provider = process.env.STRAND_ANALYTICS ?? "none";
+  const wj = join(cwd, "strand.json");
   if (existsSync(wj)) {
     try {
       const j = JSON.parse(readFileSync(wj, "utf8")) as { analytics?: string };
       if (j.analytics) provider = j.analytics;
     } catch {
-      /* ignore malformed wisp.json */
+      /* ignore malformed strand.json */
     }
   }
   return {
     cwd,
     postsDir: join(cwd, "content/posts"),
     authorsDir: join(cwd, "content/authors"),
-    baseBranch: process.env.WISP_BASE_BRANCH ?? "main",
-    analytics: { provider, domain: process.env.WISP_ANALYTICS_DOMAIN },
+    baseBranch: process.env.STRAND_BASE_BRANCH ?? "main",
+    analytics: { provider, domain: process.env.STRAND_ANALYTICS_DOMAIN },
   };
 }

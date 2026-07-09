@@ -15,7 +15,7 @@ function bail<T>(v: T | symbol): T {
 }
 
 export async function runPrompts(): Promise<Answers> {
-  intro("create-wisp — an agent-first publishing system");
+  intro("create-strand — an agent-first publishing system");
 
   const projectName = bail(
     await text({

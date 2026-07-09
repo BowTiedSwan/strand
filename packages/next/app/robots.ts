@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { site } from "@/lib/wisp";
+import { site } from "@/lib/strand";
 export default function robots(): MetadataRoute.Robots {
   return { rules: [{ userAgent: "*", allow: "/" }], sitemap: `${site.url}/sitemap.xml` };
 }

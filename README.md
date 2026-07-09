@@ -1,4 +1,4 @@
-# Wisp
+# Strand CMS
 
 > **Working name** — a lighter, smaller thing than a Ghost. Find-and-replace freely.
 
@@ -7,14 +7,14 @@ news sites. Articles are **MDX files in Git**, written and optimized by agents, 
 by a deployable frontend with **SEO and AI-search (GEO) built into the core**. No
 database, no CMS UI, no human-editor bloat.
 
-Ghost gave humans a beautiful editor and a database. Wisp gives agents a strict schema, a
+Ghost gave humans a beautiful editor and a database. Strand gives agents a strict schema, a
 Git repo, and a set of skills — and keeps only the SEO/structured-data core that actually
 earns traffic.
 
 ## Why
 
 Everything an editor does — drafting, SEO, structured data, scheduling, publishing — an
-agent can now do against a well-defined contract. So Wisp throws out the database, the
+agent can now do against a well-defined contract. So Strand throws out the database, the
 WYSIWYG editor, members/subscriptions, newsletters, theme marketplaces, and roles, and
 keeps the ~15% of a CMS that matters: a validated content schema and a publishing-quality
 core. Then it pushes that core further than Ghost ever did, toward **AI search engines**.
@@ -25,13 +25,13 @@ See [`DESIGN.md`](./DESIGN.md) for the full architecture, the keep/cut analysis,
 
 | Package | What it is | Status |
 |---|---|---|
-| [`packages/core`](./packages/core) | `@wisp/core` — content schema (Zod), MDX loader, and the SEO/GEO generators (sitemap, JSON-LD, RSS, robots, `llms.txt`, the `.md` endpoint) | ✅ built + verified |
-| [`packages/create-wisp`](./packages/create-wisp) | The `npm create wisp` interactive scaffolder | ✅ built + verified |
-| [`packages/cli`](./packages/cli) | `@wisp/cli` — the `wisp` bin: the **MCP server** (real git + filesystem ops) and `wisp validate` | ✅ built + verified |
-| [`skills/`](./skills) | Three native skills (`wisp-publish`, `wisp-content-schema`, `wisp-fact-check-cite`) + the skill install/dedup resolver | ✅ |
+| [`packages/core`](./packages/core) | `@strand/core` — content schema (Zod), MDX loader, and the SEO/GEO generators (sitemap, JSON-LD, RSS, robots, `llms.txt`, the `.md` endpoint) | ✅ built + verified |
+| [`packages/create-strand`](./packages/create-strand) | The `npm create strand` interactive scaffolder | ✅ built + verified |
+| [`packages/cli`](./packages/cli) | `@strand/cli` — the `strand` bin: the **MCP server** (real git + filesystem ops) and `strand validate` | ✅ built + verified |
+| [`skills/`](./skills) | Three native skills (`strand-publish`, `strand-content-schema`, `strand-fact-check-cite`) + the skill install/dedup resolver | ✅ |
 | [`profile-dist/`](./profile-dist) | A reference Hermes editor profile distribution (SOUL + config + cron) | ✅ |
-| [`packages/next`](./packages/next) | `@wisp/next` — the default theme: a Next.js publication with the **wisp rail**, MDX rendering, and all SEO/GEO routes | ✅ built + verified |
-| [`packages/content-api`](./packages/content-api) | `@wisp/content-api` — typed query layer + framework-agnostic JSON API (Hono/Next/Bun) + typed client + static snapshot | ✅ built + verified |
+| [`packages/next`](./packages/next) | `@strand/next` — the default theme: a Next.js publication with the **strand rail**, MDX rendering, and all SEO/GEO routes | ✅ built + verified |
+| [`packages/content-api`](./packages/content-api) | `@strand/content-api` — typed query layer + framework-agnostic JSON API (Hono/Next/Bun) + typed client + static snapshot | ✅ built + verified |
 
 Every code package typechecks under `strict` + `noUncheckedIndexedAccess` and has been
 exercised against real inputs (MDX fixtures, a temp git repo, and a live MCP stdio session).
@@ -39,7 +39,7 @@ exercised against real inputs (MDX fixtures, a temp git repo, and a live MCP std
 ## Quickstart
 
 ```bash
-npm create wisp@latest
+npm create strand@latest
 ```
 
 The scaffolder asks for: frontend (Next.js / headless / Astro), analytics (cookieless
@@ -53,11 +53,11 @@ adapters, the skill set (installing only what's missing), and the editor profile
 
 ## The agent model
 
-Wisp is driven three ways, chosen at scaffold time:
+Strand is driven three ways, chosen at scaffold time:
 
 - **Skills + CLI** — marketing skills + native skills installed into your terminal coding
   agent. Human-in-the-loop.
-- **Skills + MCP** — the `wisp mcp` server exposes structured tools (`create_draft`,
+- **Skills + MCP** — the `strand mcp` server exposes structured tools (`create_draft`,
   `validate_post`, `publish_post`, `get_analytics`, …) to any MCP client. Headless.
 - **Both** — and this unlocks a dedicated **Hermes editor profile**: a separate agent
   (its own SOUL, skills, cron, MCP connection) that owns the publication and operates
@@ -65,9 +65,9 @@ Wisp is driven three ways, chosen at scaffold time:
 
 Skills come from the [coreyhaines31/marketingskills](https://www.skills.sh/coreyhaines31/marketingskills)
 pack (tiered into mandatory / optional / subscription-gated) plus three native skills for
-Wisp's own mechanics. The publishing core: `programmatic-seo`, `ai-seo`, `schema-markup`,
+Strand's own mechanics. The publishing core: `programmatic-seo`, `ai-seo`, `schema-markup`,
 `site-architecture`, `seo-audit`, `content-strategy`, `copywriting`, `copy-editing`,
-`analytics-tracking`, plus `wisp-content-schema`, `wisp-fact-check-cite`, `wisp-publish`.
+`analytics-tracking`, plus `strand-content-schema`, `strand-fact-check-cite`, `strand-publish`.
 
 ## What every site emits automatically
 
@@ -81,14 +81,14 @@ cited sources.
 
 This indexed surface is **emitted statically at build** (rebuilt on merge), which is what
 SEO/GEO needs — content in the server's HTML, not assembled client-side. The headless
-`@wisp/content-api` is a **separate JSON data channel** for app/programmatic consumers, not
+`@strand/content-api` is a **separate JSON data channel** for app/programmatic consumers, not
 the crawlable surface; keep article pages and these artifacts static (or cached). See
 [`packages/content-api`](./packages/content-api) for the details.
 
 ## Develop
 
 ```bash
-npm install            # workspace install (links @wisp/core locally)
+npm install            # workspace install (links @strand/core locally)
 npm run -ws typecheck  # typecheck every package
 ```
 
@@ -103,7 +103,7 @@ editor agent is instructed never to fabricate sources.
 
 ## Building & publishing
 
-The publishable packages (`@wisp/core`, `@wisp/cli`, `@wisp/content-api`, `create-wisp`)
+The publishable packages (`@strand/core`, `@strand/cli`, `@strand/content-api`, `create-strand`)
 build with **tsup** to `dist/*.js` + `.d.ts`, with `exports` pointed at the built output —
 so they run under plain `node` (and `npx`) on a clean machine, not just via tsx/bundlers.
 
@@ -111,8 +111,8 @@ so they run under plain `node` (and `npx`) on a clean machine, not just via tsx/
 npm run -ws build        # build every package
 ```
 
-Each carries a `prepublishOnly` build hook; `create-wisp` bundles the native skills into its
-own tarball at build time. `@wisp/next` is a private app, built with `next build`.
+Each carries a `prepublishOnly` build hook; `create-strand` bundles the native skills into its
+own tarball at build time. `@strand/next` is a private app, built with `next build`.
 
 ## Deploy
 
@@ -123,8 +123,8 @@ provider dashboard is the zero-config alternative.
 
 ## Status
 
-Early but substantial. The design plus five code packages are real and tested: `@wisp/core`,
-`create-wisp`, `@wisp/cli` (MCP server), `@wisp/next` (default theme), and `@wisp/content-api`
+Early but substantial. The design plus five code packages are real and tested: `@strand/core`,
+`create-strand`, `@strand/cli` (MCP server), `@strand/next` (default theme), and `@strand/content-api`
 (headless) — all building to `dist` and verified under plain `node`. The managed cloud tier is
 the next build. See [`DESIGN.md` §10](./DESIGN.md) for the roadmap.
 

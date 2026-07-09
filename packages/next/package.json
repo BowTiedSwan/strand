@@ -1,18 +1,18 @@
 {
-  "name": "@wisp/next",
+  "name": "@strand/next",
   "version": "0.0.1",
   "private": true,
-  "description": "Wisp default theme — a Next.js App Router publication with SEO + AI-search built in.",
+  "description": "Strand default theme — a Next.js App Router publication with SEO + AI-search built in.",
   "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "validate": "node ../cli/dist/bin.js validate || wisp validate",
+    "validate": "node ../cli/dist/bin.js validate || strand validate",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@wisp/core": "^0.0.1",
+    "@strand/core": "^0.0.1",
     "next": "^16.2.9",
     "next-mdx-remote": "^6.0.0",
     "react": "^19.2.7",

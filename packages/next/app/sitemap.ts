@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
-import { loadPosts, buildSitemap } from "@wisp/core";
-import { POSTS, site, routes } from "@/lib/wisp";
+import { loadPosts, buildSitemap } from "@strand/core";
+import { POSTS, site, routes } from "@/lib/strand";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return buildSitemap(loadPosts(POSTS), site, routes).map((e) => ({

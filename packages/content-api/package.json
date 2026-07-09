@@ -1,7 +1,7 @@
 {
-  "name": "@wisp/content-api",
+  "name": "@strand/content-api",
   "version": "0.0.1",
-  "description": "Wisp headless content layer: typed queries, a framework-agnostic JSON API, a typed client, and a static snapshot builder.",
+  "description": "Strand headless content layer: typed queries, a framework-agnostic JSON API, a typed client, and a static snapshot builder.",
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build"
   },
-  "dependencies": { "@wisp/core": "^0.0.1" },
+  "dependencies": { "@strand/core": "^0.0.1" },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "tsup": "^8.0.0",

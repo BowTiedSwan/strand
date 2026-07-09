@@ -1,13 +1,13 @@
-# @wisp/next — default theme
+# @strand/next — default theme
 
-The reference Wisp theme: a Next.js App Router publication that reads MDX from
-`content/` via `@wisp/core` and ships SEO + AI-search (GEO) out of the box.
+The reference Strand theme: a Next.js App Router publication that reads MDX from
+`content/` via `@strand/core` and ships SEO + AI-search (GEO) out of the box.
 
 ## Design
 
-The theme's thesis is **structure made visible** — Wisp content is uniquely structured
+The theme's thesis is **structure made visible** — Strand content is uniquely structured
 (every post has a TL;DR, an FAQ, and cited sources), so the theme makes that structure
-the design. The signature element is the **wisp rail**: a luminous line beside each
+the design. The signature element is the **strand rail**: a luminous line beside each
 article that tracks reading progress and lights up structural anchors. Type is Fraunces
 (display) + Newsreader (body) + IBM Plex Mono (metadata); the accent is a single
 luminous teal used with restraint. Light/dark, keyboard focus, and reduced motion are
@@ -17,7 +17,7 @@ all handled.
 
 ```
 /                       index (post feed)
-/blog/[slug]            article — summary, MDX prose, FAQ, sources, JSON-LD, wisp rail
+/blog/[slug]            article — summary, MDX prose, FAQ, sources, JSON-LD, strand rail
 /blog/[slug].md         clean Markdown rendering for AI crawlers
 /tag/[tag]              topic collection
 /author/[author]        author page (with E-E-A-T entity markup in JSON-LD)

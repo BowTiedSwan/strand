@@ -1,7 +1,7 @@
 {
-  "name": "@wisp/core",
+  "name": "@strand/core",
   "version": "0.0.1",
-  "description": "Wisp core: content schema, MDX loader, and SEO/GEO generators.",
+  "description": "Strand core: content schema, MDX loader, and SEO/GEO generators.",
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.js",

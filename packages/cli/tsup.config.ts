@@ -6,5 +6,5 @@ export default defineConfig({
   clean: true,
   target: "es2022",
   banner: { js: "#!/usr/bin/env node" },
-  external: ["@modelcontextprotocol/sdk", "@wisp/core", "gray-matter", "zod", "zod-to-json-schema"],
+  external: ["@modelcontextprotocol/sdk", "@strand/core", "gray-matter", "zod", "zod-to-json-schema"],
 });

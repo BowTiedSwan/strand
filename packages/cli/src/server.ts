@@ -8,7 +8,7 @@ import { loadCtx } from "./context";
 export async function startServer(cwd: string = process.cwd()): Promise<void> {
   const ctx = loadCtx(cwd);
   const server = new Server(
-    { name: "wisp", version: "0.0.1" },
+    { name: "strand", version: "0.0.1" },
     { capabilities: { tools: {} } },
   );
 
@@ -31,5 +31,5 @@ export async function startServer(cwd: string = process.cwd()): Promise<void> {
 
   await server.connect(new StdioServerTransport());
   // Diagnostics go to stderr so they never corrupt the stdio JSON-RPC stream.
-  console.error(`wisp MCP server ready (cwd: ${ctx.cwd}, analytics: ${ctx.analytics.provider})`);
+  console.error(`strand MCP server ready (cwd: ${ctx.cwd}, analytics: ${ctx.analytics.provider})`);
 }

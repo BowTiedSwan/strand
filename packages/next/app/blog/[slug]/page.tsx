@@ -3,10 +3,10 @@ import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import {
   loadPosts, loadPost, loadAuthor, buildMetadata, postGraph, tagPath, authorPath,
-} from "@wisp/core";
-import { POSTS, AUTHORS, site, routes } from "@/lib/wisp";
+} from "@strand/core";
+import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 import { mdxComponents } from "@/components/mdx-components";
-import WispRail from "@/components/WispRail";
+import StrandRail from "@/components/StrandRail";
 import Summary from "@/components/Summary";
 import Faq from "@/components/Faq";
 import Sources from "@/components/Sources";
@@ -67,7 +67,7 @@ export default async function ArticlePage({ params }: Params) {
       {fm.summary && <Summary text={fm.summary} />}
 
       <div className="article__body">
-        <WispRail anchors={anchors} />
+        <StrandRail anchors={anchors} />
         <article className="prose">
           <MDXRemote source={post.body} components={mdxComponents} />
           <Faq items={fm.faq} />

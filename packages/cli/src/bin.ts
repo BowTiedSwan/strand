@@ -12,7 +12,7 @@ async function main() {
       validateCli(process.argv[3]);
       break;
     default:
-      console.log("Usage: wisp <command>\n\n  mcp        start the Wisp MCP server (stdio)\n  validate   validate post frontmatter in content/posts");
+      console.log("Usage: strand <command>\n\n  mcp        start the Strand MCP server (stdio)\n  validate   validate post frontmatter in content/posts");
       process.exit(cmd ? 1 : 0);
   }
 }

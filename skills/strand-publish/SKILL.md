@@ -1,17 +1,17 @@
 ---
-name: wisp-publish
-description: Commit, schedule, and publish a finished article to a Wisp blog. Use this whenever an article draft is ready to go live, needs to be committed to the content repo, scheduled for a future date, or published — or whenever the user says "publish", "ship the post", "push the article", or "open a PR for this post". Always publishes via a pull request and never pushes directly to main. Use this even if the user only says "it's done" about an article they were working on.
+name: strand-publish
+description: Commit, schedule, and publish a finished article to a Strand blog. Use this whenever an article draft is ready to go live, needs to be committed to the content repo, scheduled for a future date, or published — or whenever the user says "publish", "ship the post", "push the article", or "open a PR for this post". Always publishes via a pull request and never pushes directly to main. Use this even if the user only says "it's done" about an article they were working on.
 ---
 
-# wisp-publish
+# strand-publish
 
-Operates Wisp's Git-based publishing workflow. The content repo is the source of truth; every article change is a commit on a branch and a pull request. **Never push to `main` directly, never force-push, never rewrite published history.**
+Operates Strand's Git-based publishing workflow. The content repo is the source of truth; every article change is a commit on a branch and a pull request. **Never push to `main` directly, never force-push, never rewrite published history.**
 
 ## Preconditions (check before publishing)
 
 1. The post file lives at `content/posts/<slug>.mdx`.
-2. Frontmatter validates against the schema. Run `wisp validate <slug>` (or the MCP `validate_post` tool). If it fails, fix it with the `wisp-content-schema` skill first — do **not** publish a failing post.
-3. For factual or news content, `sources[]` is populated and claims are cited (use `wisp-fact-check-cite`).
+2. Frontmatter validates against the schema. Run `strand validate <slug>` (or the MCP `validate_post` tool). If it fails, fix it with the `strand-content-schema` skill first — do **not** publish a failing post.
+3. For factual or news content, `sources[]` is populated and claims are cited (use `strand-fact-check-cite`).
 
 ## Workflow
 

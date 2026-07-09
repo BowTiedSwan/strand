@@ -6,5 +6,5 @@ export default defineConfig({
   clean: true,
   target: "es2022",
   banner: { js: "#!/usr/bin/env node" },
-  external: ["@clack/prompts", "@wisp/core"],
+  external: ["@clack/prompts", "@strand/core"],
 });

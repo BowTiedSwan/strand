@@ -51,7 +51,7 @@ function zodErrors(e: import("zod").ZodError): ValidationResult["errors"] {
 
 /* ------------------------------------------------------- validation */
 
-/** Validate an already-parsed frontmatter object. Used by `wisp validate` and the MCP validate_post tool. */
+/** Validate an already-parsed frontmatter object. Used by `strand validate` and the MCP validate_post tool. */
 export function validateFrontmatter(data: unknown): ValidationResult {
   const parsed = PostFrontmatter.safeParse(data);
   if (parsed.success) return { ok: true, errors: [] };

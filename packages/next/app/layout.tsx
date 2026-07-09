@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Newsreader, IBM_Plex_Mono } from "next/font/google";
 import Link from "next/link";
-import { site } from "@/lib/wisp";
+import { site } from "@/lib/strand";
 import Analytics from "@/components/Analytics";
 import "./globals.css";
 
@@ -39,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
 
           <footer className="footer">
-            <span>{site.name} — published with Wisp</span>
+            <span>{site.name} — published with Strand</span>
             <span>MDX in Git · SEO + AI-search built in</span>
           </footer>
         </div>

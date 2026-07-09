@@ -1,5 +1,5 @@
 /**
- * Wisp MCP tool surface — Zod inputs + tool definitions.
+ * Strand MCP tool surface — Zod inputs + tool definitions.
  * `zodToJsonSchema` produces the JSON Schema the MCP protocol expects.
  *
  * Safety posture (enforced by the handlers):

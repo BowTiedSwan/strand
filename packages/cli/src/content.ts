@@ -7,7 +7,7 @@ import {
   loadPost,
   validatePostFile,
   validateFrontmatter,
-} from "@wisp/core";
+} from "@strand/core";
 import type { Ctx } from "./context";
 
 export function postFile(ctx: Ctx, slug: string): string {

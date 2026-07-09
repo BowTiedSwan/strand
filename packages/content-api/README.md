@@ -1,20 +1,20 @@
-# @wisp/content-api
+# @strand/content-api
 
-The headless layer for Wisp. Same MDX-in-Git content as the default theme, exposed three ways:
+The headless layer for Strand. Same MDX-in-Git content as the default theme, exposed three ways:
 
 1. **A typed query layer** — `createContent(config)` returns `getPosts`, `getPost`,
    `getTags`, `getAuthors`, `search`, etc. Import it directly in any Node/Bun frontend
    for build-time/static use, no HTTP.
 2. **A framework-agnostic JSON API** — `createContentApi(config).handle(request)` takes a
    Web `Request` and returns a `Response`. Mounts unchanged in Hono, Next, or `Bun.serve`.
-3. **A typed client + a static snapshot** — `createWispClient(baseUrl)` for consumers, and
+3. **A typed client + a static snapshot** — `createStrandClient(baseUrl)` for consumers, and
    `buildSnapshot(config)` to bake the whole publication into one JSON file.
 
 ## Rendering & SEO — read this before mounting the live API
 
 Keep the **indexed surface static.** The article HTML, JSON-LD, `sitemap.xml`, `llms.txt`, and
 the per-post `.md` are what Google and AI engines read — they should come from **static
-generation** (the default `@wisp/next` theme emits them at build, rebuilt on merge) or
+generation** (the default `@strand/next` theme emits them at build, rebuilt on merge) or
 server-side rendering, never client-side fetches of this API. SEO/GEO needs the content in the
 server's HTML response; what breaks it is client-side-only rendering, not "a server existing."
 
@@ -44,8 +44,8 @@ All JSON responses send `access-control-allow-origin: *` so browser frontends ca
 ## Mount it
 
 ```ts
-import { createContentApi } from "@wisp/content-api";
-import { site, routes, POSTS, AUTHORS } from "./lib/wisp";
+import { createContentApi } from "@strand/content-api";
+import { site, routes, POSTS, AUTHORS } from "./lib/strand";
 
 const api = createContentApi({ postsDir: POSTS, authorsDir: AUTHORS, site, routes, basePath: "/api" });
 
@@ -62,17 +62,17 @@ Bun.serve({ fetch: (req) => api.handle(req) });
 ## Consume it
 
 ```ts
-import { createWispClient } from "@wisp/content-api";
+import { createStrandClient } from "@strand/content-api";
 
-const wisp = createWispClient("https://yoursite.com/api");
-const { posts } = await wisp.posts({ tag: "geo", limit: 10 });
-const post = await wisp.post("agent-first-publishing");
+const strand = createStrandClient("https://yoursite.com/api");
+const { posts } = await strand.posts({ tag: "geo", limit: 10 });
+const post = await strand.post("agent-first-publishing");
 ```
 
 ## Static snapshot
 
 ```ts
-import { writeSnapshot } from "@wisp/content-api";
+import { writeSnapshot } from "@strand/content-api";
 writeSnapshot(config, "public/content.json"); // import at build time, no server needed
 ```
 

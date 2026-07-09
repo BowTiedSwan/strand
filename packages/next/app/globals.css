@@ -1,6 +1,6 @@
 /* ============================================================
-   Wisp default theme — "structure made visible"
-   Signature: the wisp rail (a luminous line that brightens at
+   Strand default theme — "structure made visible"
+   Signature: the strand rail (a luminous line that brightens at
    each structural anchor of an article).
    ============================================================ */
 
@@ -84,7 +84,7 @@ a:hover { color: var(--accent-strong); }
   text-decoration: none;
   display: inline-flex; align-items: center; gap: 0.55rem;
 }
-/* the brand mark: a small wisp of light */
+/* the brand mark: a small strand of light */
 .masthead__mark {
   width: 0.5rem; height: 1.5rem; border-radius: 999px;
   background: linear-gradient(180deg, transparent, var(--accent) 55%, var(--accent-strong));
@@ -152,7 +152,7 @@ a:hover { color: var(--accent-strong); }
   .entry__date { padding-top: 0; }
 }
 
-/* ---------------------------------------------------- article + wisp rail */
+/* ---------------------------------------------------- article + strand rail */
 
 .article { padding: 3rem 0 0; }
 .article__head { max-width: var(--measure); }

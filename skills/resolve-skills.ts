@@ -1,5 +1,5 @@
 /**
- * resolve-skills.ts — Wisp skill installer / dedup resolver.
+ * resolve-skills.ts — Strand skill installer / dedup resolver.
  *
  * Two skill ecosystems with different storage locations:
  *   • skills.sh (Vercel)  → installed via `npx skills add <repo>/<skill>`
@@ -41,7 +41,7 @@ export const MARKETING = {
 } as const;
 
 /** Native skills bundled in this package (copied, not fetched from skills.sh). */
-export const NATIVE = ["wisp-publish", "wisp-content-schema", "wisp-fact-check-cite"] as const;
+export const NATIVE = ["strand-publish", "strand-content-schema", "strand-fact-check-cite"] as const;
 const NATIVE_SRC = join(import.meta.dirname, "."); // skills/<name>/SKILL.md
 
 export type Mode = "core" | "core+media" | "custom";
