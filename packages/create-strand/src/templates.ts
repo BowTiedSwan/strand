@@ -88,6 +88,8 @@ const config = {
   url: "https://example.com",        // ← set your production origin (no trailing slash)
   description: "A programmatic publication built with Strand.",
   locale: "en",
+  // Post <title>s are emitted absolute (no layout template applies). To brand
+  // them, opt in explicitly: titleSuffix: " · ${a.projectName}",
   defaultAuthor: "${persona(a)}",
   organization: { name: "${a.projectName}" },
 } satisfies Partial<SiteConfig>;

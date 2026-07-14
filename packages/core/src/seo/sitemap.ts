@@ -23,6 +23,15 @@ export interface SitemapEntry {
   priority?: number;
 }
 
+/**
+ * Percent-encode "&" in sitemap URLs. Next.js serializes
+ * `MetadataRoute.Sitemap` to XML WITHOUT escaping <loc>, so one raw "&"
+ * in any URL invalidates the whole sitemap for Google's strict parser.
+ * %26 is the same URL, valid in both the XML and the raw-string path
+ * (sitemapXml's esc() finds no "&" left to double-escape).
+ */
+const xmlSafeUrl = (url: string): string => url.replace(/&/g, "%26");
+
 /** Returns entries compatible with Next.js `app/sitemap.ts` (MetadataRoute.Sitemap). */
 export function buildSitemap(
   posts: Post[],
@@ -36,7 +45,7 @@ export function buildSitemap(
   for (const p of posts) {
     if (p.frontmatter.noindex) continue;
     entries.push({
-      url: postUrl(site, routes, p.slug),
+      url: xmlSafeUrl(postUrl(site, routes, p.slug)),
       lastModified: p.frontmatter.updatedAt ?? p.frontmatter.publishedAt,
       changeFrequency: "weekly",
       priority: 0.8,
@@ -45,7 +54,7 @@ export function buildSitemap(
   }
   for (const t of tags) {
     entries.push({
-      url: new URL(tagPath(routes, t), site.url).toString(),
+      url: xmlSafeUrl(new URL(tagPath(routes, t), site.url).toString()),
       lastModified: new Date().toISOString(),
       changeFrequency: "weekly",
       priority: 0.5,

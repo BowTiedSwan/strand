@@ -15,6 +15,9 @@ const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variabl
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
+  // Applies to non-post pages only: @strand/core's buildMetadata emits post
+  // titles as { absolute }, so articles are never double-branded by this
+  // template. Post-title branding is SiteConfig.titleSuffix, an SEO decision.
   title: { default: site.name, template: `%s · ${site.name}` },
   description: site.description,
 };

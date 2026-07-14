@@ -60,6 +60,13 @@ export const SiteConfig = z.object({
   url: z.string().url(), // canonical origin, no trailing slash
   description: z.string(),
   locale: z.string().default("en"),
+  /**
+   * Optional suffix appended to every post <title> (e.g. " | Acme News").
+   * Off by default: buildMetadata emits titles as `{ absolute }`, so no
+   * layout `title.template` can double-brand an article. Opt in here if
+   * the publication's SEO policy wants the suffix.
+   */
+  titleSuffix: z.string().optional(),
   defaultAuthor: z.string(),
   defaultOgImage: z.string().optional(),
   organization: z
@@ -97,8 +104,64 @@ export function postUrl(site: SiteConfig, routes: RoutesConfig, slug: string): s
   return new URL(postPath(routes, slug), site.url).toString();
 }
 export function tagPath(routes: RoutesConfig, tag: string): string {
-  return routes.tag.replace("{tag}", tag);
+  // Encode: a raw "&" or space in a tag would otherwise flow into hrefs
+  // and sitemap <loc> values and break strict XML parsers (Google).
+  return routes.tag.replace("{tag}", encodeURIComponent(tag));
 }
 export function authorPath(routes: RoutesConfig, author: string): string {
   return routes.author.replace("{author}", author);
+}
+
+/* ==================================================== Source policy */
+
+/**
+ * Mechanical enforcement of editorial sourcing rules.
+ *
+ * Prose rules in agent briefs drift — an agent will eventually cite a
+ * social post as a source no matter what the brief says. A source policy
+ * turns the rule into a validation error at the schema gate, which is the
+ * only place the rule reliably holds. Sites declare policies per content
+ * type (or per anything) and call checkSourcePolicy from their validator.
+ *
+ * Example (a news site where X posts are citable only in social-velocity
+ * coverage):
+ *
+ *   const NEWS_POLICY = { denyDomains: ["x.com", "twitter.com"] };
+ *   if (contentType !== "PULSE")
+ *     errors.push(...checkSourcePolicy(fm.sources, NEWS_POLICY));
+ */
+export const SourcePolicy = z.object({
+  /** If set, every source hostname must match one of these domains. */
+  allowDomains: z.array(z.string()).optional(),
+  /** Source hostnames matching any of these domains are rejected. */
+  denyDomains: z.array(z.string()).optional(),
+});
+export type SourcePolicy = z.infer<typeof SourcePolicy>;
+
+const domainMatches = (host: string, domain: string): boolean =>
+  host === domain || host.endsWith("." + domain);
+
+/** Returns one error string per violating source; empty array = clean. */
+export function checkSourcePolicy(
+  sources: ReadonlyArray<{ url: string }> | undefined,
+  policy: SourcePolicy,
+): string[] {
+  const errors: string[] = [];
+  for (const s of sources ?? []) {
+    let host: string;
+    try {
+      host = new URL(s.url).hostname.replace(/^www\./, "");
+    } catch {
+      continue; // malformed URLs are the frontmatter schema's problem
+    }
+    if (policy.denyDomains?.some((d) => domainMatches(host, d))) {
+      errors.push(
+        `sources: ${s.url} — ${host} is on this content type's deny list; cite the primary document or trade coverage`,
+      );
+    }
+    if (policy.allowDomains?.length && !policy.allowDomains.some((d) => domainMatches(host, d))) {
+      errors.push(`sources: ${s.url} — ${host} is not on this content type's allow list`);
+    }
+  }
+  return errors;
 }
