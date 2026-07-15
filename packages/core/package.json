@@ -1,6 +1,6 @@
 {
   "name": "@strand-cms/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Strand core: content schema, MDX loader, and SEO/GEO generators.",
   "type": "module",
   "license": "MIT",
