@@ -5,7 +5,7 @@
   "type": "module",
   "license": "MIT",
   "bin": {
-    "strand": "./dist/bin.js"
+    "strand": "dist/bin.js"
   },
   "files": [
     "dist"
