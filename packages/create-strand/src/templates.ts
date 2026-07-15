@@ -9,7 +9,7 @@ export function gitignore(): string {
 }
 
 export function projectPackageJson(a: Answers): string {
-  const deps: Record<string, string> = { "@strand/core": "^0.0.1" };
+  const deps: Record<string, string> = { "@strand-cms/core": "^0.0.1" };
   if (a.frontend === "next") {
     Object.assign(deps, {
       next: "^16.2.9", react: "^19.2.7", "react-dom": "^19.2.7",
@@ -81,7 +81,7 @@ export default withMDX(nextConfig);
 }
 
 export function siteConfig(a: Answers): string {
-  return `import type { SiteConfig } from "@strand/core";
+  return `import type { SiteConfig } from "@strand-cms/core";
 
 const config = {
   name: "${a.projectName}",
@@ -99,7 +99,7 @@ export default config;
 }
 
 export function routesConfig(): string {
-  return `import type { RoutesConfig } from "@strand/core";
+  return `import type { RoutesConfig } from "@strand-cms/core";
 
 const routes = {
   post: "/blog/{slug}",
@@ -112,7 +112,7 @@ export default routes;
 }
 
 export function libStrand(): string {
-  return `import { SiteConfig, RoutesConfig } from "@strand/core";
+  return `import { SiteConfig, RoutesConfig } from "@strand-cms/core";
 import { join } from "node:path";
 import siteCfg from "@/site.config";
 import routesCfg from "@/routes.config";
@@ -192,9 +192,9 @@ ${analyticsTag}        {children}
 
 export function appIndex(): string {
   return `import Link from "next/link";
-import { loadPosts } from "@strand/core";
+import { loadPosts } from "@strand-cms/core";
 import { POSTS, routes } from "@/lib/strand";
-import { postPath } from "@strand/core";
+import { postPath } from "@strand-cms/core";
 
 export default function Home() {
   const posts = loadPosts(POSTS);
@@ -217,7 +217,7 @@ export default function Home() {
 
 export function appBlogSlugPage(): string {
   return `import { notFound } from "next/navigation";
-import { loadPost, loadAuthor, buildMetadata, postGraph } from "@strand/core";
+import { loadPost, loadAuthor, buildMetadata, postGraph } from "@strand-cms/core";
 import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -251,7 +251,7 @@ export default async function Page({ params }: Params) {
 
 export function appBlogSlugMd(): string {
   return `import type { NextRequest } from "next/server";
-import { loadPost, loadAuthor, loadPosts, renderPostMarkdown } from "@strand/core";
+import { loadPost, loadAuthor, loadPosts, renderPostMarkdown } from "@strand-cms/core";
 import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 
 export const dynamic = "force-static";
@@ -284,7 +284,7 @@ export async function GET(
 
 export function appSitemap(): string {
   return `import type { MetadataRoute } from "next";
-import { loadPosts, buildSitemap } from "@strand/core";
+import { loadPosts, buildSitemap } from "@strand-cms/core";
 import { POSTS, site, routes } from "@/lib/strand";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -307,7 +307,7 @@ export default function robots(): MetadataRoute.Robots {
 }
 
 export function appFeed(): string {
-  return `import { loadPosts, buildRss } from "@strand/core";
+  return `import { loadPosts, buildRss } from "@strand-cms/core";
 import { POSTS, site, routes } from "@/lib/strand";
 
 export function GET() {
@@ -319,7 +319,7 @@ export function GET() {
 }
 
 export function appLlms(): string {
-  return `import { loadPosts, buildLlmsTxt } from "@strand/core";
+  return `import { loadPosts, buildLlmsTxt } from "@strand-cms/core";
 import { POSTS, site, routes } from "@/lib/strand";
 
 export function GET() {
@@ -331,7 +331,7 @@ export function GET() {
 }
 
 export function appLlmsFull(): string {
-  return `import { loadPosts, loadAuthors, buildLlmsFullTxt } from "@strand/core";
+  return `import { loadPosts, loadAuthors, buildLlmsFullTxt } from "@strand-cms/core";
 import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 
 export function GET() {
@@ -426,7 +426,7 @@ ${map[a.subscriptions]}
 export function validateScript(): string {
   return `import { readdirSync } from "node:fs";
 import { join } from "node:path";
-import { validatePostFile } from "@strand/core";
+import { validatePostFile } from "@strand-cms/core";
 
 const dir = join(process.cwd(), "content/posts");
 let bad = 0;

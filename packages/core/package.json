@@ -1,5 +1,5 @@
 {
-  "name": "@strand/core",
+  "name": "@strand-cms/core",
   "version": "0.1.0",
   "description": "Strand core: content schema, MDX loader, and SEO/GEO generators.",
   "type": "module",

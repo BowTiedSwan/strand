@@ -1,5 +1,5 @@
 {
-  "name": "@strand/content-api",
+  "name": "@strand-cms/content-api",
   "version": "0.1.0",
   "description": "Strand headless content layer: typed queries, a framework-agnostic JSON API, a typed client, and a static snapshot builder.",
   "type": "module",
@@ -22,7 +22,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@strand/core": "^0.1.0"
+    "@strand-cms/core": "^0.1.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

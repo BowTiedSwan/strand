@@ -1,4 +1,4 @@
-import type { SiteConfig } from "@strand/core";
+import type { SiteConfig } from "@strand-cms/core";
 
 const config = {
   name: "Strand",

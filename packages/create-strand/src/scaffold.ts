@@ -68,13 +68,13 @@ export function scaffold(a: Answers, opts: ScaffoldOptions = {}): ScaffoldResult
     if (analytics) w("components/Analytics.tsx", analytics);
   } else if (a.frontend === "headless") {
     notes.push(
-      "Headless mode: no app/ scaffolded. Import loadPosts/loadPost from @strand/core in your " +
+      "Headless mode: no app/ scaffolded. Import loadPosts/loadPost from @strand-cms/core in your " +
         "own frontend, or expose content via a JSON route. lib/strand.ts is ready to use.",
     );
   } else if (a.frontend === "astro") {
     notes.push(
-      "Astro selected: config + content + validation are scaffolded; wire @strand/core into your " +
-        "Astro pages (the generators are framework-agnostic — see @strand/core/INTEGRATION.md).",
+      "Astro selected: config + content + validation are scaffolded; wire @strand-cms/core into your " +
+        "Astro pages (the generators are framework-agnostic — see @strand-cms/core/INTEGRATION.md).",
     );
   }
 

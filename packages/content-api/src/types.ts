@@ -1,4 +1,4 @@
-import type { PostFrontmatter } from "@strand/core";
+import type { PostFrontmatter } from "@strand-cms/core";
 
 export interface PostSummaryDTO {
   slug: string;

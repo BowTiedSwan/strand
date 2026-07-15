@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { loadPosts, loadAuthors, loadAuthor, postPath } from "@strand/core";
+import { loadPosts, loadAuthors, loadAuthor, postPath } from "@strand-cms/core";
 import { POSTS, AUTHORS, routes } from "@/lib/strand";
 
 export function generateStaticParams() {

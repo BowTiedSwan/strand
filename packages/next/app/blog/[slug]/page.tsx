@@ -3,7 +3,7 @@ import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import {
   loadPosts, loadPost, loadAuthor, buildMetadata, postGraph, tagPath, authorPath,
-} from "@strand/core";
+} from "@strand-cms/core";
 import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 import { mdxComponents } from "@/components/mdx-components";
 import StrandRail from "@/components/StrandRail";

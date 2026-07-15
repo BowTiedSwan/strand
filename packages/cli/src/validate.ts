@@ -1,6 +1,6 @@
 import { readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { validatePostFile } from "@strand/core";
+import { validatePostFile } from "@strand-cms/core";
 
 /** `strand validate [dir]` — validate every post's frontmatter; exit 1 on any failure. */
 export function validateCli(dir?: string): void {

@@ -1,4 +1,4 @@
-import { SiteConfig, RoutesConfig } from "@strand/core";
+import { SiteConfig, RoutesConfig } from "@strand-cms/core";
 import { join } from "node:path";
 import siteCfg from "@/site.config";
 import routesCfg from "@/routes.config";

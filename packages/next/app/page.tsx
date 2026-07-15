@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { loadPosts, postPath, tagPath } from "@strand/core";
+import { loadPosts, postPath, tagPath } from "@strand-cms/core";
 import { POSTS, routes, site } from "@/lib/strand";
 
 function fmtDate(iso: string) {

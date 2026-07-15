@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { relative } from "node:path";
 import matter from "gray-matter";
-import { validatePostFile } from "@strand/core";
+import { validatePostFile } from "@strand-cms/core";
 import type { Ctx } from "./context";
 import { postFile } from "./content";
 import {

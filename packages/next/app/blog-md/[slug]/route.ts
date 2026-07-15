@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { loadPost, loadAuthor, loadPosts, renderPostMarkdown } from "@strand/core";
+import { loadPost, loadAuthor, loadPosts, renderPostMarkdown } from "@strand-cms/core";
 import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 
 export const dynamic = "force-static";

@@ -25,13 +25,13 @@ See [`DESIGN.md`](./DESIGN.md) for the full architecture, the keep/cut analysis,
 
 | Package | What it is | Status |
 |---|---|---|
-| [`packages/core`](./packages/core) | `@strand/core` — content schema (Zod), MDX loader, and the SEO/GEO generators (sitemap, JSON-LD, RSS, robots, `llms.txt`, the `.md` endpoint) | ✅ built + verified |
+| [`packages/core`](./packages/core) | `@strand-cms/core` — content schema (Zod), MDX loader, and the SEO/GEO generators (sitemap, JSON-LD, RSS, robots, `llms.txt`, the `.md` endpoint) | ✅ built + verified |
 | [`packages/create-strand`](./packages/create-strand) | The `npm create strand` interactive scaffolder | ✅ built + verified |
-| [`packages/cli`](./packages/cli) | `@strand/cli` — the `strand` bin: the **MCP server** (real git + filesystem ops) and `strand validate` | ✅ built + verified |
+| [`packages/cli`](./packages/cli) | `@strand-cms/cli` — the `strand` bin: the **MCP server** (real git + filesystem ops) and `strand validate` | ✅ built + verified |
 | [`skills/`](./skills) | Three native skills (`strand-publish`, `strand-content-schema`, `strand-fact-check-cite`) + the skill install/dedup resolver | ✅ |
 | [`profile-dist/`](./profile-dist) | A reference Hermes editor profile distribution (SOUL + config + cron) | ✅ |
-| [`packages/next`](./packages/next) | `@strand/next` — the default theme: a Next.js publication with the **strand rail**, MDX rendering, and all SEO/GEO routes | ✅ built + verified |
-| [`packages/content-api`](./packages/content-api) | `@strand/content-api` — typed query layer + framework-agnostic JSON API (Hono/Next/Bun) + typed client + static snapshot | ✅ built + verified |
+| [`packages/next`](./packages/next) | `@strand-cms/next` — the default theme: a Next.js publication with the **strand rail**, MDX rendering, and all SEO/GEO routes | ✅ built + verified |
+| [`packages/content-api`](./packages/content-api) | `@strand-cms/content-api` — typed query layer + framework-agnostic JSON API (Hono/Next/Bun) + typed client + static snapshot | ✅ built + verified |
 
 Every code package typechecks under `strict` + `noUncheckedIndexedAccess` and has been
 exercised against real inputs (MDX fixtures, a temp git repo, and a live MCP stdio session).
@@ -81,14 +81,14 @@ cited sources.
 
 This indexed surface is **emitted statically at build** (rebuilt on merge), which is what
 SEO/GEO needs — content in the server's HTML, not assembled client-side. The headless
-`@strand/content-api` is a **separate JSON data channel** for app/programmatic consumers, not
+`@strand-cms/content-api` is a **separate JSON data channel** for app/programmatic consumers, not
 the crawlable surface; keep article pages and these artifacts static (or cached). See
 [`packages/content-api`](./packages/content-api) for the details.
 
 ## Develop
 
 ```bash
-npm install            # workspace install (links @strand/core locally)
+npm install            # workspace install (links @strand-cms/core locally)
 npm run -ws typecheck  # typecheck every package
 ```
 
@@ -113,7 +113,7 @@ editor agent is instructed never to fabricate sources.
 
 ## Building & publishing
 
-The publishable packages (`@strand/core`, `@strand/cli`, `@strand/content-api`, `create-strand`)
+The publishable packages (`@strand-cms/core`, `@strand-cms/cli`, `@strand-cms/content-api`, `create-strand`)
 build with **tsup** to `dist/*.js` + `.d.ts`, with `exports` pointed at the built output —
 so they run under plain `node` (and `npx`) on a clean machine, not just via tsx/bundlers.
 
@@ -122,7 +122,7 @@ npm run -ws build        # build every package
 ```
 
 Each carries a `prepublishOnly` build hook; `create-strand` bundles the native skills into its
-own tarball at build time. `@strand/next` is a private app, built with `next build`.
+own tarball at build time. `@strand-cms/next` is a private app, built with `next build`.
 
 ## Deploy
 
@@ -133,8 +133,8 @@ provider dashboard is the zero-config alternative.
 
 ## Status
 
-Early but substantial. The design plus five code packages are real and tested: `@strand/core`,
-`create-strand`, `@strand/cli` (MCP server), `@strand/next` (default theme), and `@strand/content-api`
+Early but substantial. The design plus five code packages are real and tested: `@strand-cms/core`,
+`create-strand`, `@strand-cms/cli` (MCP server), `@strand-cms/next` (default theme), and `@strand-cms/content-api`
 (headless) — all building to `dist` and verified under plain `node`. The managed cloud tier is
 the next build. See [`DESIGN.md` §10](./DESIGN.md) for the roadmap.
 

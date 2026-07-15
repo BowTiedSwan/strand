@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { loadPosts, buildSitemap } from "@strand/core";
+import { loadPosts, buildSitemap } from "@strand-cms/core";
 import { POSTS, site, routes } from "@/lib/strand";
 
 export default function sitemap(): MetadataRoute.Sitemap {

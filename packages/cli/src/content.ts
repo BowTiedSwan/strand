@@ -7,7 +7,7 @@ import {
   loadPost,
   validatePostFile,
   validateFrontmatter,
-} from "@strand/core";
+} from "@strand-cms/core";
 import type { Ctx } from "./context";
 
 export function postFile(ctx: Ctx, slug: string): string {

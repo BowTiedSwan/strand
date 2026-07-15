@@ -239,12 +239,12 @@ AI-search/GEO is not a question — it is always on.
 strand/
 ├── DESIGN.md                        ← this file
 ├── packages/
-│   ├── core/        @strand/core — schema, MDX loader, SEO/GEO generators  [built]
+│   ├── core/        @strand-cms/core — schema, MDX loader, SEO/GEO generators  [built]
 │   ├── create-strand/ the `npm create strand` scaffolder                     [built]
-│   ├── cli/         @strand/cli — `strand` bin: MCP server + `strand validate`  [built]
+│   ├── cli/         @strand-cms/cli — `strand` bin: MCP server + `strand validate`  [built]
 │   │                  src/tools.ts is the canonical MCP tool surface
-│   ├── next/        @strand/next — default theme (strand rail, MDX, SEO/GEO)      [built]
-│   └── content-api/ @strand/content-api — typed queries + JSON API + client    [built]
+│   ├── next/        @strand-cms/next — default theme (strand rail, MDX, SEO/GEO)      [built]
+│   └── content-api/ @strand-cms/content-api — typed queries + JSON API + client    [built]
 ├── skills/
 │   ├── strand-publish/SKILL.md
 │   ├── strand-content-schema/SKILL.md
@@ -268,5 +268,5 @@ strand/
   sync + analytics + on-merge deploy. Open-core; 100% of the publishing core stays MIT.
 - **Per-skill vs whole-pack install:** skills.sh exposes per-skill URLs; resolver assumes per-skill `add` with a whole-pack fallback (confirm against the skills.sh CLI).
 - **Hermes config keys:** `model`, `provider`, `toolsets`, `terminal.cwd`, `compression` are confirmed from docs; `cron` and MCP-connection keys are represented best-effort in `profile-dist/config.yaml` — verify against the Hermes configuration/integrations reference before shipping.
-- **Published-package assumption:** a scaffolded project depends on `@strand/*` from npm, so its CI `npm ci` needs those packages published (they resolve via the workspace in this monorepo). Publish `@strand/core`/`@strand/cli`/`@strand/content-api` before the generated CI is green on a clean runner.
+- **Published-package assumption:** a scaffolded project depends on `@strand-cms/*` from npm, so its CI `npm ci` needs those packages published (they resolve via the workspace in this monorepo). Publish `@strand-cms/core`/`@strand-cms/cli`/`@strand-cms/content-api` before the generated CI is green on a clean runner.
 - **Scheduled posts:** `status: scheduled` + `publishedAt` in the future, resolved at build by a scheduled CI run (or the editor profile's cron).

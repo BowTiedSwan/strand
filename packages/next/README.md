@@ -1,7 +1,7 @@
-# @strand/next — default theme
+# @strand-cms/next — default theme
 
 The reference Strand theme: a Next.js App Router publication that reads MDX from
-`content/` via `@strand/core` and ships SEO + AI-search (GEO) out of the box.
+`content/` via `@strand-cms/core` and ships SEO + AI-search (GEO) out of the box.
 
 ## Design
 

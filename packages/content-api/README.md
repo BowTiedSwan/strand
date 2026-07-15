@@ -1,4 +1,4 @@
-# @strand/content-api
+# @strand-cms/content-api
 
 The headless layer for Strand. Same MDX-in-Git content as the default theme, exposed three ways:
 
@@ -14,7 +14,7 @@ The headless layer for Strand. Same MDX-in-Git content as the default theme, exp
 
 Keep the **indexed surface static.** The article HTML, JSON-LD, `sitemap.xml`, `llms.txt`, and
 the per-post `.md` are what Google and AI engines read — they should come from **static
-generation** (the default `@strand/next` theme emits them at build, rebuilt on merge) or
+generation** (the default `@strand-cms/next` theme emits them at build, rebuilt on merge) or
 server-side rendering, never client-side fetches of this API. SEO/GEO needs the content in the
 server's HTML response; what breaks it is client-side-only rendering, not "a server existing."
 
@@ -44,7 +44,7 @@ All JSON responses send `access-control-allow-origin: *` so browser frontends ca
 ## Mount it
 
 ```ts
-import { createContentApi } from "@strand/content-api";
+import { createContentApi } from "@strand-cms/content-api";
 import { site, routes, POSTS, AUTHORS } from "./lib/strand";
 
 const api = createContentApi({ postsDir: POSTS, authorsDir: AUTHORS, site, routes, basePath: "/api" });
@@ -62,7 +62,7 @@ Bun.serve({ fetch: (req) => api.handle(req) });
 ## Consume it
 
 ```ts
-import { createStrandClient } from "@strand/content-api";
+import { createStrandClient } from "@strand-cms/content-api";
 
 const strand = createStrandClient("https://yoursite.com/api");
 const { posts } = await strand.posts({ tag: "geo", limit: 10 });
@@ -72,7 +72,7 @@ const post = await strand.post("agent-first-publishing");
 ## Static snapshot
 
 ```ts
-import { writeSnapshot } from "@strand/content-api";
+import { writeSnapshot } from "@strand-cms/content-api";
 writeSnapshot(config, "public/content.json"); // import at build time, no server needed
 ```
 

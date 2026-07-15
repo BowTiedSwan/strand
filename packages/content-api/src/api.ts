@@ -2,7 +2,7 @@ import {
   loadPosts, loadPost, loadAuthors, loadAuthor, renderPostMarkdown,
   buildLlmsTxt, buildLlmsFullTxt, buildRss, sitemapXml,
   postUrl, type Post, type Author, type SiteConfig, type RoutesConfig,
-} from "@strand/core";
+} from "@strand-cms/core";
 import type { PostSummaryDTO, PostDTO, AuthorDTO, TagDTO } from "./types";
 
 export interface ContentApiConfig {

@@ -1,4 +1,4 @@
-import { loadPosts, loadAuthors, buildLlmsFullTxt } from "@strand/core";
+import { loadPosts, loadAuthors, buildLlmsFullTxt } from "@strand-cms/core";
 import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 export function GET() {
   return new Response(buildLlmsFullTxt(loadPosts(POSTS), loadAuthors(AUTHORS), site, routes), {

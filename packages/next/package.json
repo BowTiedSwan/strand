@@ -1,5 +1,5 @@
 {
-  "name": "@strand/next",
+  "name": "@strand-cms/next",
   "version": "0.0.1",
   "private": true,
   "description": "Strand default theme — a Next.js App Router publication with SEO + AI-search built in.",
@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@strand/core": "^0.1.0",
+    "@strand-cms/core": "^0.1.0",
     "next": "^16.2.9",
     "next-mdx-remote": "^6.0.0",
     "react": "^19.2.7",
