@@ -96,9 +96,19 @@ Requires Node 20+. The repo is an npm workspace.
 
 ## Safety model
 
-Publishing is **PR-only**. The `publish_post` tool refuses to commit to the base branch,
-never force-pushes, and only auto-merges when the repo itself allows it. The content
-schema is enforced in CI and a pre-commit hook, so a malformed post cannot merge. The
+Publication policy is a **scaffold-time decision by the human, not a publish-time
+decision by the agent**. `strand.json` carries `publishMode`: in `review` (the
+default) every post ships as a PR against the base branch and merging is the act
+of publishing — `publish_post` refuses to commit to the base branch; in `direct`
+`publish_post` commits to the base branch and pushes. There is no tool argument,
+flag, or environment variable that changes the mode: agents provably copy any
+publish-status flag they can see into their invocations (a Strand dogfood site
+shipped three invisible draft briefs exactly this way), so the surface doesn't
+exist. In both modes frontmatter `status` is forced to `published` at publish
+time — everything on the base branch is live, and not-ready work stays on a
+branch instead of hiding behind a draft flag. `publish_post` never force-pushes
+and only auto-merges when the repo itself allows it. The content schema is
+enforced in CI and a pre-commit hook, so a malformed post cannot merge. The
 editor agent is instructed never to fabricate sources.
 
 ## Building & publishing

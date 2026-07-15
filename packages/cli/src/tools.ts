@@ -3,7 +3,10 @@
  * `zodToJsonSchema` produces the JSON Schema the MCP protocol expects.
  *
  * Safety posture (enforced by the handlers):
- *   • Writes go through pull requests. publish_post NEVER pushes main / force-pushes.
+ *   • Publication policy is strand.json `publishMode` (human-set at scaffold,
+ *     no tool argument or env can override it): "review" (default) = writes go
+ *     through pull requests, publish_post never pushes the base branch;
+ *     "direct" = publish_post commits to the base branch. Never force-pushes.
  *   • No delete tool exists; unpublish = noindex + draft via update_post.
  *   • validate_post / list / get / search / get_analytics are side-effect free.
  */
@@ -76,7 +79,7 @@ export const TOOLS: ToolDef[] = [
   { name: "validate_post", description: "Validate a post (on-disk by slug, or an inline candidate) against the frontmatter schema. Returns field-level errors.", inputSchema: ValidatePost, mutates: false },
   { name: "create_draft", description: "Create a new draft MDX file at content/posts/<slug>.mdx. Validates first; does not publish.", inputSchema: CreateDraft, mutates: true },
   { name: "update_post", description: "Update a post's frontmatter and/or body. Validates first; does not publish.", inputSchema: UpdatePost, mutates: true },
-  { name: "publish_post", description: "Branch, commit, and open a PR for a post. Never pushes to main or force-pushes. Auto-merge only if the repo permits.", inputSchema: PublishPost, mutates: true },
+  { name: "publish_post", description: "Publish a post per the site's strand.json publishMode: review (default) branches, commits, and opens a PR — merging publishes; direct commits to the base branch and pushes. Frontmatter status is forced to published either way. Never force-pushes. The mode is the site owner's decision — there is no argument to change it.", inputSchema: PublishPost, mutates: true },
   { name: "get_analytics", description: "Read analytics for a post or the whole site from the configured adapter, including AI/LLM referrers. Read-only.", inputSchema: GetAnalytics, mutates: false },
 ];
 

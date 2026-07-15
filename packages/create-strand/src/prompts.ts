@@ -2,7 +2,7 @@ import {
   intro, outro, text, select, confirm, multiselect, isCancel, cancel,
 } from "@clack/prompts";
 import type {
-  Answers, Frontend, Analytics, Subscriptions, AgentMode, SkillSet, ProfileChoice, DeployTarget,
+  Answers, Frontend, Analytics, Subscriptions, AgentMode, PublishMode, SkillSet, ProfileChoice, DeployTarget,
 } from "./types";
 import { MARKETING } from "./skills";
 
@@ -88,6 +88,17 @@ export async function runPrompts(): Promise<Answers> {
     }),
   ) as AgentMode;
 
+  const publishMode = bail(
+    await select({
+      message: "Publishing policy (this is yours, not the agent's — it has no flag to override it)",
+      options: [
+        { value: "review", label: "Review — every post is a PR; merging publishes", hint: "default" },
+        { value: "direct", label: "Direct — agent posts go live on the base branch" },
+      ],
+      initialValue: "review" as PublishMode,
+    }),
+  ) as PublishMode;
+
   const skillSet = bail(
     await select({
       message: "Install marketing skills",
@@ -153,7 +164,7 @@ export async function runPrompts(): Promise<Answers> {
 
   return {
     projectName, frontend, analytics, personas, subscriptions,
-    agentMode, skillSet, customSkills, profile, cron, deployTarget, gitInit,
+    agentMode, publishMode, skillSet, customSkills, profile, cron, deployTarget, gitInit,
   };
 }
 
