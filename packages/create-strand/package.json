@@ -1,11 +1,16 @@
 {
   "name": "create-strand",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Scaffold an agent-first Strand publication.",
   "type": "module",
   "license": "MIT",
-  "bin": { "create-strand": "./dist/index.js" },
-  "files": ["dist", "skills"],
+  "bin": {
+    "create-strand": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "skills"
+  ],
   "scripts": {
     "build": "tsup && node scripts/copy-skills.mjs",
     "typecheck": "tsc --noEmit",
@@ -13,11 +18,31 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.7.0",
-    "@strand/core": "^0.0.1"
+    "@strand/core": "^0.1.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.6.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BowTiedSwan/strand.git",
+    "directory": "packages/create-strand"
+  },
+  "homepage": "https://github.com/BowTiedSwan/strand#readme",
+  "bugs": "https://github.com/BowTiedSwan/strand/issues",
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "strand",
+    "cms",
+    "agent-first",
+    "publishing",
+    "mdx",
+    "seo",
+    "geo",
+    "blog"
+  ]
 }

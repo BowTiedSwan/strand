@@ -1,6 +1,6 @@
 {
   "name": "@strand/core",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Strand core: content schema, MDX loader, and SEO/GEO generators.",
   "type": "module",
   "license": "MIT",
@@ -8,10 +8,18 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
-    "./schema": { "types": "./dist/schema.d.ts", "import": "./dist/schema.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./schema": {
+      "types": "./dist/schema.d.ts",
+      "import": "./dist/schema.js"
+    }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
@@ -25,5 +33,28 @@
     "@types/node": "^22.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.6.0"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BowTiedSwan/strand.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/BowTiedSwan/strand#readme",
+  "bugs": "https://github.com/BowTiedSwan/strand/issues",
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "strand",
+    "cms",
+    "agent-first",
+    "publishing",
+    "mdx",
+    "seo",
+    "geo",
+    "blog"
+  ]
 }
