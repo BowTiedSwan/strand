@@ -91,6 +91,9 @@ const config = {
   // Post <title>s are emitted absolute (no layout template applies). To brand
   // them, opt in explicitly: titleSuffix: " · ${a.projectName}",
   defaultAuthor: "${persona(a)}",
+  // Per-post generated 1200×630 social cards. Set false (or remove) to
+  // publish posts without og:image when no explicit image is set.
+  generateOgImages: true,
   organization: { name: "${a.projectName}" },
 } satisfies Partial<SiteConfig>;
 
@@ -152,10 +155,14 @@ title: "Hello, world — your first Strand post"
 slug: hello-world
 description: "A starter post showing the frontmatter contract, SEO fields, and the AI-search (GEO) fields Strand emits automatically."
 publishedAt: "${today}"
+updatedAt: "${today}"
 status: published
 author: ${persona(a)}
 type: BlogPosting
 tags: [meta, getting-started]
+contentType: explainer
+primaryKeyword: "agent-first publishing"
+keywords: ["agent-first publishing", "strand cms", "mdx in git", "ai search optimization", "content frontmatter contract"]
 summary: "This starter post demonstrates Strand's schema: title, description, summary (TL;DR), FAQ, and sources — all of which feed SEO and AI-search output."
 faq:
   - q: "What is Strand?"
@@ -165,8 +172,9 @@ sources: []
 
 Welcome to your new Strand site. Replace this post with your own — or let an agent write it.
 
-The frontmatter above is validated on commit. The \`summary\`, \`faq\`, and \`sources\`
-fields are what make your content legible to AI search engines.
+The frontmatter above is validated on commit. The \`summary\`, \`faq\`, \`sources\`,
+\`contentType\`, \`primaryKeyword\`, and \`keywords\` fields are what make your content
+legible to AI search engines.
 `,
   };
 }
@@ -217,7 +225,7 @@ export default function Home() {
 
 export function appBlogSlugPage(): string {
   return `import { notFound } from "next/navigation";
-import { loadPost, loadAuthor, buildMetadata, postGraph } from "@strand-cms/core";
+import { loadPost, loadAuthor, buildMetadata, postGraph, postPath } from "@strand-cms/core";
 import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -225,7 +233,17 @@ type Params = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Params) {
   const { slug } = await params;
   const post = loadPost(POSTS, slug, {});
-  return post ? buildMetadata(post, site, routes) : {};
+  if (!post) return {};
+  const meta = buildMetadata(post, site, routes);
+  // Per-post 1200×630 card rendered by ./opengraph-image.tsx — opt-in via
+  // site.generateOgImages. A post with no image source still publishes,
+  // just without og:image / twitter:image.
+  if (!meta.openGraph.images && site.generateOgImages) {
+    const img = new URL(\`\${postPath(routes, slug)}/opengraph-image\`, site.url).toString();
+    meta.openGraph.images = [img];
+    meta.twitter.images = [img];
+  }
+  return meta;
 }
 
 export default async function Page({ params }: Params) {
@@ -240,10 +258,66 @@ export default async function Page({ params }: Params) {
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
       <h1>{post.frontmatter.title}</h1>
-      {post.frontmatter.summary && <p className="post-summary">{post.frontmatter.summary}</p>}
+      {/* Verbatim grounding paragraph — first element of the body, where AI engines quote from. */}
+      {post.frontmatter.summary && <p className="grounding">{post.frontmatter.summary}</p>}
       {/* Render post.body with your MDX renderer of choice (next-mdx-remote, @next/mdx). */}
       <pre>{post.body}</pre>
     </article>
+  );
+}
+`;
+}
+
+/**
+ * Per-article 1200×630 social card. File-based so every post gets a real
+ * og:image / twitter:image; page.tsx wires the URL into metadata explicitly.
+ */
+export function appBlogSlugOgImage(): string {
+  return `import { ImageResponse } from "next/og";
+import { loadPosts, loadPost } from "@strand-cms/core";
+import { POSTS, site } from "@/lib/strand";
+
+export const size = { width: 1200, height: 630 };
+export const contentType = "image/png";
+export const alt = "Article social card";
+
+export function generateStaticParams() {
+  return loadPosts(POSTS).map((p) => ({ slug: p.slug }));
+}
+
+export default async function OgImage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = loadPost(POSTS, slug, {});
+  const fm = post?.frontmatter;
+
+  const explicit = fm?.og?.image ?? fm?.featureImage?.src;
+  if (explicit) {
+    const src = new URL(explicit, site.url).toString();
+    return new ImageResponse(
+      <img src={src} width={size.width} height={size.height} style={{ width: "100%", height: "100%", objectFit: "cover" }} />,
+      size,
+    );
+  }
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: "100%", height: "100%", display: "flex", flexDirection: "column",
+          justifyContent: "space-between", padding: "64px 72px",
+          background: "#101014", color: "#f4f4f2",
+        }}
+      >
+        <div style={{ fontSize: 34, letterSpacing: 2, textTransform: "uppercase" }}>{site.name}</div>
+        <div style={{ display: "flex", fontSize: fm && fm.title.length > 48 ? 58 : 68, fontWeight: 700, lineHeight: 1.15, maxWidth: 1000 }}>
+          {fm?.title ?? site.name}
+        </div>
+        <div style={{ display: "flex", gap: 28, fontSize: 28, color: "#b9b9b4" }}>
+          {fm?.tags[0] && <div>{\`#\${fm.tags[0]}\`}</div>}
+        </div>
+      </div>
+    ),
+    size,
   );
 }
 `;
