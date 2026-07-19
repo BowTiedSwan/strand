@@ -214,21 +214,14 @@ a:hover { color: var(--accent-strong); }
   .rail__node { display: none; }
 }
 
-/* ---------------------------------------------------- summary (TL;DR) */
+/* ------------------------------------------- grounding (verbatim lede) */
 
-.summary {
-  max-width: var(--measure);
-  margin: 0 0 2rem; padding: 1.1rem 1.3rem;
-  background: var(--accent-tint);
-  border-left: 2px solid var(--accent);
-  border-radius: 0 4px 4px 0;
+.prose .grounding {
+  font-size: var(--step-1);
+  line-height: 1.55;
+  font-weight: 500;
+  margin: 0 0 1.6rem;
 }
-.summary__label {
-  font-family: var(--font-mono); font-size: var(--step--1);
-  text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-strong);
-  display: block; margin-bottom: 0.35rem;
-}
-.summary p { margin: 0; font-size: var(--step-1); line-height: 1.5; }
 
 /* ---------------------------------------------------- prose typography */
 

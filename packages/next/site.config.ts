@@ -7,6 +7,8 @@ const config = {
   locale: "en",
   defaultAuthor: "staff",
   organization: { name: "Strand" },
+  // Per-post generated 1200×630 social cards (app/blog/[slug]/opengraph-image.tsx).
+  generateOgImages: true,
   social: { twitterHandle: "@strand" },
 } satisfies Partial<SiteConfig>;
 

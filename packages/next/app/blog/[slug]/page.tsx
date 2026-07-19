@@ -2,12 +2,12 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import {
-  loadPosts, loadPost, loadAuthor, buildMetadata, postGraph, tagPath, authorPath,
+  loadPosts, loadPost, loadAuthor, buildMetadata, postGraph, postPath, tagPath, authorPath,
 } from "@strand-cms/core";
 import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 import { mdxComponents } from "@/components/mdx-components";
 import StrandRail from "@/components/StrandRail";
-import Summary from "@/components/Summary";
+import Grounding from "@/components/Grounding";
 import Faq from "@/components/Faq";
 import Sources from "@/components/Sources";
 
@@ -20,11 +20,24 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Params) {
   const { slug } = await params;
   const post = loadPost(POSTS, slug, {});
-  return post ? buildMetadata(post, site, routes) : {};
+  if (!post) return {};
+  const meta = buildMetadata(post, site, routes);
+  // Per-post 1200×630 card rendered by ./opengraph-image.tsx — opt-in via
+  // site.generateOgImages. A post with no image source still publishes,
+  // just without og:image / twitter:image.
+  if (!meta.openGraph.images && site.generateOgImages) {
+    const img = new URL(`${postPath(routes, slug)}/opengraph-image`, site.url).toString();
+    meta.openGraph.images = [img];
+    meta.twitter.images = [img];
+  }
+  return meta;
 }
 
 function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en", { year: "numeric", month: "long", day: "numeric" });
+  // timeZone UTC so a bare-date updatedAt ("2026-07-27") never shifts a day.
+  return new Date(iso).toLocaleDateString("en", {
+    year: "numeric", month: "long", day: "numeric", timeZone: "UTC",
+  });
 }
 
 export default async function ArticlePage({ params }: Params) {
@@ -59,16 +72,16 @@ export default async function ArticlePage({ params }: Params) {
             </Link>
           </span>
           <span>{fmtDate(fm.publishedAt)}</span>
+          {fm.updatedAt && <span>Updated {fmtDate(fm.updatedAt)}</span>}
           <span>{post.readingTimeMinutes} min read</span>
           {fm.sources.length > 0 && <span>{fm.sources.length} sources</span>}
         </div>
       </header>
 
-      {fm.summary && <Summary text={fm.summary} />}
-
       <div className="article__body">
         <StrandRail anchors={anchors} />
         <article className="prose">
+          {fm.summary && <Grounding text={fm.summary} />}
           <MDXRemote source={post.body} components={mdxComponents} />
           <Faq items={fm.faq} />
           <Sources items={fm.sources} />
