@@ -14,10 +14,14 @@ npm install @strand-cms/core
 Zod schemas that define the content contract agents write against:
 
 - `PostFrontmatter` — the post contract: slug, title, description, status
-  (`draft`/`scheduled`/`published`), tags, authors, SEO fields, cited sources, FAQ.
+  (`draft`/`scheduled`/`published`), tags, authors, SEO fields, cited sources, FAQ,
+  and AI-search targeting: `contentType` (`guide`/`comparison`/`roundup`/`news`/
+  `explainer`), `primaryKeyword`, and per-article `keywords` (5–8).
 - `AuthorFrontmatter` — author entities for E-E-A-T markup.
 - `SiteConfig` / `RoutesConfig` — site identity and URL layout, with `postPath`,
-  `postUrl`, `tagPath`, `authorPath` helpers.
+  `postUrl`, `tagPath`, `authorPath` helpers, and the opt-in `generateOgImages`
+  flag for theme-generated per-post social cards (off by default — a post with
+  no image source still publishes, just without `og:image`).
 - `SourcePolicy` + `checkSourcePolicy(sources, policy)` — mechanical enforcement of
   editorial sourcing rules; returns one error string per violating source.
 
@@ -47,8 +51,11 @@ const post  = loadPost("content/posts", "my-slug");  // one post, drafts include
 import { buildMetadata, postGraph, sitemapXml, buildRss, buildRobots } from "@strand-cms/core";
 ```
 
-- `buildMetadata(post, site, routes)` — title, description, canonical, OpenGraph +
-  Twitter cards as framework-agnostic `PageMetadata`.
+- `buildMetadata(post, site, routes)` — title, description, canonical, per-article
+  keywords, full `robots`/`googlebot` preview directives (`max-snippet:-1,
+  max-image-preview:large, max-video-preview:-1`), `ai-content-type` / `ai-topic`
+  hint tags, `article:modified_time` (from `updatedAt`, falling back to
+  `publishedAt`), and OpenGraph + Twitter cards as framework-agnostic `PageMetadata`.
 - `articleJsonLd` / `faqJsonLd` / `breadcrumbJsonLd` / `websiteJsonLd` / `postGraph` —
   JSON-LD (`Article`/`NewsArticle`/`BlogPosting`, `FAQPage`, breadcrumbs) ready to embed.
 - `sitemapXml`, `buildRss`, `buildRobots` — the classic crawl surface.

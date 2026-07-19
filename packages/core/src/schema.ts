@@ -8,7 +8,13 @@ export const PostFrontmatter = z.object({
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   description: z.string().min(50).max(160),
   publishedAt: z.string().datetime(),
-  updatedAt: z.string().datetime().optional(),
+  // Accepts a full ISO datetime or a bare date (e.g. "2026-07-27").
+  // Drives <meta property="article:modified_time"> and the visible "Updated" date.
+  updatedAt: z
+    .string()
+    .datetime()
+    .or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/))
+    .optional(),
   status: z.enum(["draft", "scheduled", "published"]).default("draft"),
   author: z.string(), // → content/authors/<id>.mdx
   tags: z.array(z.string()).default([]),
@@ -29,6 +35,16 @@ export const PostFrontmatter = z.object({
   faq: z
     .array(z.object({ q: z.string(), a: z.string() }))
     .default([]),
+
+  // — AI-search targeting (head-tag audit, 2026-07-19) —
+  /** Article shape hint for AI engines → <meta name="ai-content-type">. */
+  contentType: z
+    .enum(["guide", "comparison", "roundup", "news", "explainer"])
+    .optional(),
+  /** Primary keyword, lowercased on emit → <meta name="ai-topic">. */
+  primaryKeyword: z.string().min(1).optional(),
+  /** Per-article meta keywords; 5–8 when present. */
+  keywords: z.array(z.string().min(1)).min(5).max(8).optional(),
   sources: z
     .array(
       z.object({
@@ -69,6 +85,12 @@ export const SiteConfig = z.object({
   titleSuffix: z.string().optional(),
   defaultAuthor: z.string(),
   defaultOgImage: z.string().optional(),
+  /**
+   * Opt-in: reference the theme's generated per-post 1200×630 social card
+   * when a post has no explicit image. Off by default — a post with no
+   * image source still publishes, just without og:image / twitter:image.
+   */
+  generateOgImages: z.boolean().default(false),
   organization: z
     .object({
       name: z.string(),
