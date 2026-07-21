@@ -86,11 +86,11 @@ sequenceDiagram
     M->>M: validate against Zod schema
     M-->>A: draft id + validation result
     A->>S: fact-check-cite (verify claims, attach sources[])
-    A->>M: publish_post(id) — opens PR, never pushes main
-    M->>G: branch + commit MDX + open PR
+    A->>M: publish_post(id) — behavior fixed by scaffold-time publishMode
+    M->>G: review mode: branch + commit MDX + open PR<br/>direct mode: commit straight to the base branch
     G->>CI: run frontmatter + link + schema checks
     CI-->>G: green
-    Note over G,D: human or auto-merge per repo policy
+    Note over G,D: publishMode=review → human/auto merge publishes<br/>publishMode=direct → already on main
     G->>D: merge to main triggers build
     D->>D: regenerate sitemap / JSON-LD / llms.txt / .md endpoints
 ```
@@ -109,7 +109,7 @@ sequenceDiagram
 
 ## 4. Content model (the contract)
 
-Single source of truth for frontmatter. Lives at `packages/core/schema.ts`; the `strand-content-schema` skill and the MCP `validate_post` tool both import it.
+Single source of truth for frontmatter. Lives at `packages/core/src/schema.ts`; the `strand-content-schema` skill and the MCP `validate_post` tool both import it.
 
 ```ts
 import { z } from "zod";
@@ -120,7 +120,9 @@ export const PostFrontmatter = z.object({
   slug:         z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   description:  z.string().min(50).max(160),        // meta description
   publishedAt:  z.string().datetime(),
-  updatedAt:    z.string().datetime().optional(),
+  updatedAt:    z.string().datetime()               // full ISO datetime, or a bare
+                 .or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)) // date ("2026-07-27")
+                 .optional(),                       // → article:modified_time + visible "Updated"
   status:       z.enum(["draft", "scheduled", "published"]).default("draft"),
   author:       z.string(),                          // → content/authors/<id>.mdx
   tags:         z.array(z.string()).default([]),
@@ -133,8 +135,15 @@ export const PostFrontmatter = z.object({
   type:         z.enum(["BlogPosting", "NewsArticle", "Article"]).default("BlogPosting"),
 
   // — GEO / AI-search (always emitted) —
-  summary:      z.string().max(280).optional(),     // TL;DR → speakable + LLM extraction
+  summary:      z.string().max(280).optional(),     // TL;DR → speakable + verbatim grounding lede
   faq:          z.array(z.object({ q: z.string(), a: z.string() })).default([]), // → FAQPage
+
+  // — AI-search targeting (optional, head tags) —
+  contentType:  z.enum(["guide", "comparison", "roundup", "news", "explainer"])
+                 .optional(),                       // → <meta name="ai-content-type">
+  primaryKeyword: z.string().min(1).optional(),     // lowercased → <meta name="ai-topic">
+  keywords:     z.array(z.string().min(1)).min(5).max(8).optional(), // per-article meta keywords
+
   sources:      z.array(z.object({                  // → citation + AI-search trust
                   title: z.string(),
                   url:   z.string().url(),
@@ -145,20 +154,24 @@ export const PostFrontmatter = z.object({
 export type PostFrontmatter = z.infer<typeof PostFrontmatter>;
 ```
 
-`title`, `description`, `canonicalUrl` feed the SEO core. `type`, `faq`, `sources` feed the JSON-LD `schema-markup` skill. `summary`, `faq`, `sources` feed the GEO layer.
+`title`, `description`, `canonicalUrl` feed the SEO core. `type`, `faq`, `sources` feed the JSON-LD `schema-markup` skill. `summary`, `faq`, `sources` feed the GEO layer. `contentType`, `primaryKeyword`, `keywords` feed the AI-search head tags (§5).
+
+Site-level SEO policy lives in `SiteConfig` (same file): `titleSuffix` (deterministic absolute post titles — policy, not layout decoration), `generateOgImages` (opt-in per-post 1200×630 OG image route, default off), and a `SourcePolicy` primitive (allow/deny domains for `sources[]`).
 
 ---
 
 ## 5. SEO + GEO core (built-in, no plugins)
 
-**Classic SEO** (parity with Ghost): auto `sitemap.xml`, `rss.xml`, `robots.txt`, per-page `rel=canonical`, OpenGraph + Twitter cards, JSON-LD (`Article`/`NewsArticle`/`BlogPosting`).
+**Classic SEO** (parity with Ghost): auto `sitemap.xml` (XML-escaped), `rss.xml`, `robots.txt`, per-page `rel=canonical`, absolute post titles (+ optional `titleSuffix`), OpenGraph + Twitter cards (with an opt-in per-post 1200×630 generated OG image route via `generateOgImages`), JSON-LD (`Article`/`NewsArticle`/`BlogPosting`).
 
 **GEO — for ChatGPT / Perplexity / Claude / AI Overviews** (the differentiator, always on):
 - `llms.txt` + `llms-full.txt` at the root.
 - A content-negotiated **`.md` version of every page** (or `Accept: text/markdown`) so AI crawlers ingest clean source, not hydrated React DOM. MDX makes this nearly free.
 - `FAQPage` / `QAPage` + `speakable` schema from the `faq` and `summary` fields.
 - Author-entity (`Person` + `sameAs`) markup for E-E-A-T trust signals.
-- Inline citations + visible sources (LLMs favor cited claims), driven by `sources[]`.
+- Inline citations + visible sources (LLMs favor cited claims), driven by `sources[]` and gated by an optional `SourcePolicy`.
+- **AI-search head tags** (2026-07 audit): full `robots`/`googlebot` preview directives (`max-snippet`, `max-image-preview`, `max-video-preview`), `<meta name="ai-content-type">` / `<meta name="ai-topic">` from `contentType`/`primaryKeyword`, per-article `keywords`, and always-on `article:modified_time`.
+- **Verbatim grounding lede** — the default theme renders `summary` verbatim as the article body's first paragraph (no label, no aside), so AI extraction pipelines quote it as the article's own opening; the visible "Updated" date is rendered from `updatedAt`.
 
 ---
 
@@ -220,6 +233,8 @@ $ npm create strand@latest
 ? Subscriptions adapter › None / Buttondown / ConvertKit / Resend
    └─ if not None → also install conversion skill set
 ? Agent integration › Skills + CLI / Skills + MCP / Both
+? Publishing policy (yours, not the agent's — no flag overrides it)
+     › Review — every post is a PR; merging publishes (default) / Direct — agent posts go live on the base branch
 ? Install marketing skills › Recommended core (9) / Core + distribution & media / Custom select
    └─ diffs against existing skills, installs only the gap
 ? [if MCP or Both] Provision a dedicated Hermes editor profile?
@@ -263,10 +278,14 @@ strand/
 - **Done since first design:** all five code packages built and verified; the publishable
   packages build to `dist` with tsup and run under plain `node`/`npx`; deploy-on-merge
   workflows (Vercel / Cloudflare / Netlify / self-host) are emitted by the scaffolder,
-  validation-gated.
+  validation-gated; scaffold-time `publishMode` (review-PR vs direct-to-main);
+  `titleSuffix` + `SourcePolicy` + sitemap XML safety; the AI-search head-tag layer
+  (`contentType`/`primaryKeyword`/`keywords`, robots preview directives,
+  `article:modified_time`); verbatim grounding lede + visible Updated date in the theme;
+  opt-in per-post OG image route; GFM tables in the renderer.
 - **Cloud tier (next):** hosted agent runtime (managed Hermes profile per customer) + Git
   sync + analytics + on-merge deploy. Open-core; 100% of the publishing core stays MIT.
 - **Per-skill vs whole-pack install:** skills.sh exposes per-skill URLs; resolver assumes per-skill `add` with a whole-pack fallback (confirm against the skills.sh CLI).
 - **Hermes config keys:** `model`, `provider`, `toolsets`, `terminal.cwd`, `compression` are confirmed from docs; `cron` and MCP-connection keys are represented best-effort in `profile-dist/config.yaml` — verify against the Hermes configuration/integrations reference before shipping.
-- **Published-package assumption:** a scaffolded project depends on `@strand-cms/*` from npm, so its CI `npm ci` needs those packages published (they resolve via the workspace in this monorepo). Publish `@strand-cms/core`/`@strand-cms/cli`/`@strand-cms/content-api` before the generated CI is green on a clean runner.
+- **Published-package assumption — resolved:** `@strand-cms/core`, `@strand-cms/cli`, and `@strand-cms/content-api` are on npm at 0.2.0 (lockstep), `create-strand` at 0.2.1. `@strand-cms/next` stays `private` — the scaffolder emits the theme files into the generated project rather than depending on it.
 - **Scheduled posts:** `status: scheduled` + `publishedAt` in the future, resolved at build by a scheduled CI run (or the editor profile's cron).
