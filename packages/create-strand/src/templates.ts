@@ -269,7 +269,7 @@ export default async function Page({ params }: Params) {
   const graph = postGraph(post, author, site, routes);
 
   return (
-    <article className="prose">
+    <article className="article prose">
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
       <h1>{post.frontmatter.title}</h1>
@@ -834,6 +834,8 @@ body {
   font-size: var(--step-0);
   line-height: 1.7;
 }
+/* Center the reading column — do not left-lock measure in a wider shell. */
+.article { max-width: var(--measure); margin-inline: auto; }
 .prose { max-width: var(--measure); margin: 0 auto; padding: 2rem 1.25rem; }
 .prose .grounding { color: var(--muted); font-size: var(--step--1); font-style: italic; margin: 0 0 1.5rem; }
 .prose table {

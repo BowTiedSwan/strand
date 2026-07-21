@@ -154,7 +154,13 @@ a:hover { color: var(--accent-strong); }
 
 /* ---------------------------------------------------- article + strand rail */
 
-.article { padding: 3rem 0 0; }
+.article {
+  /* Center the reading column in the wide shell — otherwise a 66ch measure
+     sits hard-left inside 78rem and leaves a large empty right margin. */
+  padding: 3rem 0 0;
+  max-width: calc(var(--rail-w) + 1.8rem + var(--measure));
+  margin-inline: auto;
+}
 .article__head { max-width: var(--measure); }
 .article__kicker {
   display: flex; gap: 0.9rem; align-items: center; margin-bottom: 1.1rem;
