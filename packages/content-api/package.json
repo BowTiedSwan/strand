@@ -1,6 +1,6 @@
 {
   "name": "@strand-cms/content-api",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Strand headless content layer: typed queries, a framework-agnostic JSON API, a typed client, and a static snapshot builder.",
   "type": "module",
   "license": "MIT",

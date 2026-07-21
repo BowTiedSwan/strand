@@ -1,6 +1,6 @@
 {
   "name": "create-strand",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Scaffold an agent-first Strand publication.",
   "type": "module",
   "license": "MIT",
