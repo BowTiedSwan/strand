@@ -1,7 +1,7 @@
 # create-strand
 
 Scaffold an agent-first [Strand](https://github.com/BowTiedSwan/strand) publication —
-MDX in Git, a strict content schema, and SEO + AI-search (GEO) built into the core. No
+MDX in Git (rendered with `next-mdx-remote` + `remark-gfm` for pipe tables), a strict content schema, and SEO + AI-search (GEO) built into the core. No
 database, no CMS UI.
 
 ```bash

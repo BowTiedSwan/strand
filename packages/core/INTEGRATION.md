@@ -78,11 +78,19 @@ export function GET() {
 
 ## The article page — `app/blog/[slug]/page.tsx`
 
+Wire `next-mdx-remote` with **`remark-gfm`**. Base MDX does not parse GitHub-flavored
+pipe tables; without the plugin they render as literal `|` text (see `@strand-cms/next`
+and the NNN theme for the same fix).
+
 ```tsx
 import { notFound } from "next/navigation";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
 import { loadPost, loadAuthor, buildMetadata, postGraph } from "@strand-cms/core";
 import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
-// import your MDX renderer (next-mdx-remote / @next/mdx) for post.body
+import { mdxComponents } from "@/components/mdx-components";
+
+const mdxOptions = { mdxOptions: { remarkPlugins: [remarkGfm] } };
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
   const post = loadPost(POSTS, params.slug, {});
@@ -96,16 +104,16 @@ export default function Page({ params }: { params: { slug: string } }) {
   const graph = postGraph(post, author, site, routes);
 
   return (
-    <article>
+    <article className="prose">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }}
       />
       <h1>{post.frontmatter.title}</h1>
       {post.frontmatter.summary && (
-        <p className="post-summary">{post.frontmatter.summary}</p>
+        <p className="grounding">{post.frontmatter.summary}</p>
       )}
-      {/* <MDX source={post.body} /> */}
+      <MDXRemote source={post.body} components={mdxComponents} options={mdxOptions} />
     </article>
   );
 }

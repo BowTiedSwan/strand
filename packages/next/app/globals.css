@@ -254,6 +254,17 @@ a:hover { color: var(--accent-strong); }
 .prose pre code { background: none; padding: 0; }
 .prose img { max-width: 100%; height: auto; border-radius: 6px; }
 .prose hr { border: none; border-top: 1px solid var(--line); margin: 2.4rem 0; }
+.prose table {
+  width: 100%; border-collapse: collapse; margin: 1.6rem 0;
+  font-family: var(--font-body); font-size: var(--step--1); line-height: 1.45;
+}
+.prose th, .prose td {
+  text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top;
+}
+.prose th {
+  font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+  border-bottom: 2px solid var(--line);
+}
 
 /* a custom MDX component used by sample content */
 .callout {

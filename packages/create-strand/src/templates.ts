@@ -13,7 +13,7 @@ export function projectPackageJson(a: Answers): string {
   if (a.frontend === "next") {
     Object.assign(deps, {
       next: "^16.2.9", react: "^19.2.7", "react-dom": "^19.2.7",
-      "@next/mdx": "^16.2.9", "@mdx-js/loader": "^3.0.0", "@mdx-js/react": "^3.0.0",
+      "next-mdx-remote": "^6.0.0", "remark-gfm": "^4.0.1",
     });
   }
   if (a.subscriptions === "resend") deps["resend"] = "^4.0.0";
@@ -63,20 +63,18 @@ export function tsconfig(): string {
 export function nextConfig(): string {
   return `import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import createMDX from "@next/mdx";
 
 const root = dirname(fileURLToPath(import.meta.url));
 
-const withMDX = createMDX({});
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  pageExtensions: ["ts", "tsx", "md", "mdx"],
+  pageExtensions: ["ts", "tsx"],
   turbopack: { root },
   async rewrites() {
     return [{ source: "/blog/:slug.md", destination: "/blog-md/:slug" }];
   },
 };
-export default withMDX(nextConfig);
+export default nextConfig;
 `;
 }
 
@@ -175,6 +173,14 @@ Welcome to your new Strand site. Replace this post with your own — or let an a
 The frontmatter above is validated on commit. The \`summary\`, \`faq\`, \`sources\`,
 \`contentType\`, \`primaryKeyword\`, and \`keywords\` fields are what make your content
 legible to AI search engines.
+
+## Schema at a glance
+
+| Field | Purpose |
+| --- | --- |
+| \`summary\` | TL;DR used for speakable / AI snippets |
+| \`faq\` | FAQPage JSON-LD |
+| \`sources\` | Visible citations |
 `,
   };
 }
@@ -184,7 +190,9 @@ legible to AI search engines.
 export function appLayout(a: Answers): string {
   const analyticsImport = a.analytics === "none" ? "" : `import Analytics from "@/components/Analytics";\n`;
   const analyticsTag = a.analytics === "none" ? "" : "        <Analytics />\n";
-  return `${analyticsImport}export const metadata = { title: "${a.projectName}" };
+  return `${analyticsImport}import "./globals.css";
+
+export const metadata = { title: "${a.projectName}" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -225,8 +233,15 @@ export default function Home() {
 
 export function appBlogSlugPage(): string {
   return `import { notFound } from "next/navigation";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
 import { loadPost, loadAuthor, buildMetadata, postGraph, postPath } from "@strand-cms/core";
 import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
+import { mdxComponents } from "@/components/mdx-components";
+
+// GFM (pipe tables, strikethrough, autolinks) isn't part of base MDX — without
+// this plugin, markdown tables in article bodies render as literal \`|\` text.
+const mdxOptions = { mdxOptions: { remarkPlugins: [remarkGfm] } };
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -254,14 +269,13 @@ export default async function Page({ params }: Params) {
   const graph = postGraph(post, author, site, routes);
 
   return (
-    <article>
+    <article className="prose">
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
       <h1>{post.frontmatter.title}</h1>
       {/* Verbatim grounding paragraph — first element of the body, where AI engines quote from. */}
       {post.frontmatter.summary && <p className="grounding">{post.frontmatter.summary}</p>}
-      {/* Render post.body with your MDX renderer of choice (next-mdx-remote, @next/mdx). */}
-      <pre>{post.body}</pre>
+      <MDXRemote source={post.body} components={mdxComponents} options={mdxOptions} />
     </article>
   );
 }
@@ -785,6 +799,59 @@ ${deploySecrets(a).map((s) => `- \`${s}\``).join("\n")}
 
 The SEO/GEO artifacts regenerate on every build, so a merge always reships them. Connecting
 the repo in the ${a.deployTarget} dashboard is the zero-config alternative.`}
+`;
+}
+
+
+export function mdxComponentsFile(): string {
+  return `import type { MDXComponents } from "mdx/types";
+
+// Components available to MDX article bodies. Keep this small and intentional.
+export const mdxComponents: MDXComponents = {
+  Callout: ({ children }: { children: React.ReactNode }) => (
+    <div className="callout">{children}</div>
+  ),
+};
+`;
+}
+
+export function appGlobalsCss(): string {
+  return `/* Minimal Strand article styles — extend freely. */
+:root {
+  --paper: #f7f8f6;
+  --ink: #16191c;
+  --muted: #5b6168;
+  --line: #e3e5e1;
+  --measure: 66ch;
+  --step--1: 0.82rem;
+  --step-0: 1.125rem;
+}
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Georgia, serif;
+  font-size: var(--step-0);
+  line-height: 1.7;
+}
+.prose { max-width: var(--measure); margin: 0 auto; padding: 2rem 1.25rem; }
+.prose .grounding { color: var(--muted); font-size: var(--step--1); font-style: italic; margin: 0 0 1.5rem; }
+.prose table {
+  width: 100%; border-collapse: collapse; margin: 1.6rem 0;
+  font-size: var(--step--1); line-height: 1.45;
+}
+.prose th, .prose td {
+  text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top;
+}
+.prose th {
+  font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+  border-bottom: 2px solid var(--line);
+}
+.callout {
+  margin: 1.6rem 0; padding: 1rem 1.2rem;
+  border: 1px solid var(--line); border-radius: 6px;
+  font-size: var(--step--1); color: var(--muted);
+}
 `;
 }
 

@@ -41,6 +41,6 @@ npm run build
 ## Customize
 
 Edit `app/globals.css` (all design tokens live at the top), `site.config.ts`, and
-`routes.config.ts`. Add MDX components in `components/mdx-components.tsx`. Swap the
+`routes.config.ts`. Add MDX components in `components/mdx-components.tsx`. Article bodies use `next-mdx-remote` with **`remark-gfm`** so pipe tables, strikethrough, and autolinks render (base MDX alone leaves tables as literal `|` text). Swap the
 analytics snippet in `components/Analytics.tsx`. Content lives in `content/posts` and
 `content/authors`.

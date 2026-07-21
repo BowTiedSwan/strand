@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
 import {
   loadPosts, loadPost, loadAuthor, buildMetadata, postGraph, postPath, tagPath, authorPath,
 } from "@strand-cms/core";
@@ -10,6 +11,10 @@ import StrandRail from "@/components/StrandRail";
 import Grounding from "@/components/Grounding";
 import Faq from "@/components/Faq";
 import Sources from "@/components/Sources";
+
+// GFM (pipe tables, strikethrough, autolinks) isn't part of base MDX — without
+// this plugin, markdown tables in article bodies render as literal `|` text.
+const mdxOptions = { mdxOptions: { remarkPlugins: [remarkGfm] } };
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -82,7 +87,7 @@ export default async function ArticlePage({ params }: Params) {
         <StrandRail anchors={anchors} />
         <article className="prose">
           {fm.summary && <Grounding text={fm.summary} />}
-          <MDXRemote source={post.body} components={mdxComponents} />
+          <MDXRemote source={post.body} components={mdxComponents} options={mdxOptions} />
           <Faq items={fm.faq} />
           <Sources items={fm.sources} />
         </article>

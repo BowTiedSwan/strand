@@ -55,6 +55,7 @@ export function scaffold(a: Answers, opts: ScaffoldOptions = {}): ScaffoldResult
   /* ---- frontend ---- */
   if (a.frontend === "next") {
     w("next.config.mjs", t.nextConfig());
+    w("app/globals.css", t.appGlobalsCss());
     w("app/layout.tsx", t.appLayout(a));
     w("app/page.tsx", t.appIndex());
     w("app/blog/[slug]/page.tsx", t.appBlogSlugPage());
@@ -65,6 +66,7 @@ export function scaffold(a: Answers, opts: ScaffoldOptions = {}): ScaffoldResult
     w("app/feed.xml/route.ts", t.appFeed());
     w("app/llms.txt/route.ts", t.appLlms());
     w("app/llms-full.txt/route.ts", t.appLlmsFull());
+    w("components/mdx-components.tsx", t.mdxComponentsFile());
     const analytics = t.analyticsComponent(a);
     if (analytics) w("components/Analytics.tsx", analytics);
   } else if (a.frontend === "headless") {
