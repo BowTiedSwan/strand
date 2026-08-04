@@ -79,3 +79,11 @@ validation), [`@strand-cms/content-api`](https://www.npmjs.com/package/@strand-c
 [`create-strand`](https://www.npmjs.com/package/create-strand).
 
 MIT.
+
+## Crawl surface (hard rule)
+
+Never platform-redirect `/robots.txt` / `/sitemap.xml` / `/llms.txt` across hosts
+(Bing Soft 404). Use `CRAWL_SURFACE_PATHS`, `isCrawlSurfacePath`, and
+`hostCanonicalRedirectUrl` from this package inside Next.js `proxy.ts`.
+`site.url` must be an https origin with no trailing slash.
+

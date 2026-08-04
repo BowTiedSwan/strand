@@ -44,12 +44,50 @@ import type { MetadataRoute } from "next";
 import { site } from "@/lib/strand";
 
 export default function robots(): MetadataRoute.Robots {
+  // Prefer robotsMetadata(site) from @strand-cms/core so sitemap URL stays in sync.
   return {
     rules: [{ userAgent: "*", allow: "/" }],
     sitemap: `${site.url}/sitemap.xml`,
   };
 }
 ```
+
+
+## HARD RULE — crawl surface must not host-redirect
+
+`/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/llms-full.txt`, and `/feed.xml` must
+return **HTTP 200** with the correct content-type on **every hostname** that
+resolves to the deployment (apex and `www`).
+
+Do **not** enable a platform "Redirect all traffic to Primary Domain" toggle
+(Vercel Domains → Redirect to www/apex). That 308s `/robots.txt` on the non-
+primary host. Bing reports that as **Soft 404** (often with Discovery: Sitemap)
+and historically does not follow `robots.txt` redirects the way it follows page
+redirects.
+
+Canonicalize hosts in Next.js `proxy.ts` instead, exempting crawl-surface paths
+via `hostCanonicalRedirectUrl` / `isCrawlSurfacePath` from `@strand-cms/core`:
+
+```ts
+import { NextRequest, NextResponse } from "next/server";
+import { hostCanonicalRedirectUrl } from "@strand-cms/core";
+import { site } from "@/lib/strand";
+
+export function proxy(request: NextRequest) {
+  const host = request.headers.get("host") ?? "";
+  const redirectTo = hostCanonicalRedirectUrl(
+    site.url,
+    host,
+    request.nextUrl.pathname,
+    request.nextUrl.search,
+  );
+  if (redirectTo) return NextResponse.redirect(redirectTo, 308);
+  return NextResponse.next();
+}
+```
+
+`site.url` must be the canonical https origin (no trailing slash), matching the
+host you verify in Search Console / Bing Webmaster Tools.
 
 ## `app/feed.xml/route.ts`
 

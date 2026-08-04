@@ -5,6 +5,7 @@ import {
   postUrl,
   tagPath,
 } from "../schema";
+import { isCrawlSurfacePath } from "./crawl-surface";
 
 function esc(s: string): string {
   return s
@@ -60,6 +61,14 @@ export function buildSitemap(
       priority: 0.5,
     });
   }
+  for (const e of entries) {
+    // Soft 404 / sitemap pollution: never list robots.txt, feeds, etc.
+    if (isCrawlSurfacePath(new URL(e.url).pathname)) {
+      throw new Error(
+        `Sitemap must not include crawl-surface URL: ${e.url}. See CRAWL_SURFACE_PATHS.`,
+      );
+    }
+  }
   return entries;
 }
 
@@ -113,13 +122,29 @@ export function buildRss(posts: Post[], site: SiteConfig, routes: RoutesConfig):
 
 /* ------------------------------------------------------------ robots */
 
-/** robots.txt — allows crawlers (incl. AI) and advertises sitemap + llms.txt. */
+/**
+ * robots.txt — allows crawlers (incl. AI) and advertises the XML sitemap.
+ * Keep this plain text, short, and identical on every hostname. Never host-
+ * redirect `/robots.txt` (Bing Soft 404).
+ */
 export function buildRobots(site: SiteConfig): string {
   return [
     "User-agent: *",
     "Allow: /",
     "",
     `Sitemap: ${site.url}/sitemap.xml`,
+    `# GEO: ${site.url}/llms.txt`,
     "",
   ].join("\n");
+}
+
+/** Shape for Next.js `app/robots.ts` (`MetadataRoute.Robots`). */
+export function robotsMetadata(site: SiteConfig): {
+  rules: Array<{ userAgent: string; allow: string }>;
+  sitemap: string;
+} {
+  return {
+    rules: [{ userAgent: "*", allow: "/" }],
+    sitemap: `${site.url}/sitemap.xml`,
+  };
 }

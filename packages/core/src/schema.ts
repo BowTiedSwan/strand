@@ -73,7 +73,31 @@ export type AuthorFrontmatter = z.infer<typeof AuthorFrontmatter>;
 
 export const SiteConfig = z.object({
   name: z.string(),
-  url: z.string().url(), // canonical origin, no trailing slash
+  // Canonical https origin only (no path/query/hash/trailing slash).
+  // Must be the primary host crawlers should use — see seo/crawl-surface.ts.
+  url: z
+    .string()
+    .url()
+    .refine(
+      (u) => {
+        if (u.endsWith("/")) return false;
+        try {
+          const p = new URL(u);
+          return (
+            p.protocol === "https:" &&
+            p.pathname === "/" &&
+            p.search === "" &&
+            p.hash === ""
+          );
+        } catch {
+          return false;
+        }
+      },
+      {
+        message:
+          "site.url must be an https origin with no path, query, hash, or trailing slash (e.g. https://www.example.com)",
+      },
+    ),
   description: z.string(),
   locale: z.string().default("en"),
   /**

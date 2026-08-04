@@ -289,3 +289,12 @@ strand/
 - **Hermes config keys:** `model`, `provider`, `toolsets`, `terminal.cwd`, `compression` are confirmed from docs; `cron` and MCP-connection keys are represented best-effort in `profile-dist/config.yaml` — verify against the Hermes configuration/integrations reference before shipping.
 - **Published-package assumption — resolved:** `@strand-cms/core`, `@strand-cms/cli`, and `@strand-cms/content-api` are on npm at 0.2.0 (lockstep), `create-strand` at 0.2.1. `@strand-cms/next` stays `private` — the scaffolder emits the theme files into the generated project rather than depending on it.
 - **Scheduled posts:** `status: scheduled` + `publishedAt` in the future, resolved at build by a scheduled CI run (or the editor profile's cron).
+
+## Crawl surface (hard rule)
+
+`/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/llms-full.txt`, and `/feed.xml` must
+return HTTP 200 on every hostname. Never use a platform “redirect all traffic to
+primary domain” that also redirects these paths — Bing Soft-404s redirected
+`robots.txt`. Canonicalize hosts in `proxy.ts` with `hostCanonicalRedirectUrl`
+from `@strand-cms/core`. `site.url` is an https origin with no trailing slash.
+

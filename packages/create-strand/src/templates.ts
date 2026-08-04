@@ -83,7 +83,7 @@ export function siteConfig(a: Answers): string {
 
 const config = {
   name: "${a.projectName}",
-  url: "https://example.com",        // ← set your production origin (no trailing slash)
+  url: "https://www.example.com",    // ← canonical https origin (primary host; no trailing slash)
   description: "A programmatic publication built with Strand.",
   locale: "en",
   // Post <title>s are emitted absolute (no layout template applies). To brand
@@ -370,6 +370,38 @@ export async function GET(
 `;
 }
 
+
+export function appProxy(): string {
+  return `import { NextRequest, NextResponse } from "next/server";
+import { hostCanonicalRedirectUrl } from "@strand-cms/core";
+import { site } from "@/lib/strand";
+
+/**
+ * HARD RULE: never host-redirect crawl-surface paths (/robots.txt, /sitemap.xml,
+ * /llms.txt, /llms-full.txt, /feed.xml). Platform "redirect to primary domain"
+ * toggles Soft-404 Bing on /robots.txt — canonicalize hosts here instead.
+ */
+export function proxy(request: NextRequest) {
+  const match = request.nextUrl.pathname.match(/^\\/blog\\/([^/]+)\\.md$/);
+  if (match) {
+    const url = request.nextUrl.clone();
+    url.pathname = \`/blog-md/\${match[1]}\`;
+    return NextResponse.rewrite(url);
+  }
+
+  const redirectTo = hostCanonicalRedirectUrl(
+    site.url,
+    request.headers.get("host") ?? "",
+    request.nextUrl.pathname,
+    request.nextUrl.search,
+  );
+  if (redirectTo) return NextResponse.redirect(redirectTo, 308);
+
+  return NextResponse.next();
+}
+`;
+}
+
 export function appSitemap(): string {
   return `import type { MetadataRoute } from "next";
 import { loadPosts, buildSitemap } from "@strand-cms/core";
@@ -386,10 +418,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
 export function appRobots(): string {
   return `import type { MetadataRoute } from "next";
+import { robotsMetadata } from "@strand-cms/core";
 import { site } from "@/lib/strand";
 
 export default function robots(): MetadataRoute.Robots {
-  return { rules: [{ userAgent: "*", allow: "/" }], sitemap: \`\${site.url}/sitemap.xml\` };
+  return robotsMetadata(site);
 }
 `;
 }

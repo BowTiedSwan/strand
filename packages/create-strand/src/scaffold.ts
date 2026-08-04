@@ -63,6 +63,7 @@ export function scaffold(a: Answers, opts: ScaffoldOptions = {}): ScaffoldResult
     w("app/blog-md/[slug]/route.ts", t.appBlogSlugMd());
     w("app/sitemap.ts", t.appSitemap());
     w("app/robots.ts", t.appRobots());
+    w("proxy.ts", t.appProxy());
     w("app/feed.xml/route.ts", t.appFeed());
     w("app/llms.txt/route.ts", t.appLlms());
     w("app/llms-full.txt/route.ts", t.appLlmsFull());

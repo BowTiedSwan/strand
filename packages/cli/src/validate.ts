@@ -24,5 +24,19 @@ export function validateCli(dir?: string): void {
     console.error(`\n${bad} invalid post(s).`);
     process.exit(1);
   }
+
+  // Crawl-surface hard rule: robots + sitemap generators must exist.
+  const root = join(postsDir, "..", "..");
+  const robots = join(root, "app", "robots.ts");
+  const robotsAlt = join(root, "public", "robots.txt");
+  const sitemap = join(root, "app", "sitemap.ts");
+  if (!existsSync(robots) && !existsSync(robotsAlt)) {
+    console.error("Missing app/robots.ts (or public/robots.txt). Required crawl surface.");
+    process.exit(1);
+  }
+  if (!existsSync(sitemap)) {
+    console.error("Missing app/sitemap.ts. Required crawl surface.");
+    process.exit(1);
+  }
   console.log("\nAll posts valid.");
 }
