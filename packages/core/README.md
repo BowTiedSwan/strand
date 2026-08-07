@@ -24,6 +24,13 @@ Zod schemas that define the content contract agents write against:
   no image source still publishes, just without `og:image`).
 - `SourcePolicy` + `checkSourcePolicy(sources, policy)` — mechanical enforcement of
   editorial sourcing rules; returns one error string per violating source.
+- `TopicsPolicy` (`site.topics`) + `indexableTag(tag, postCount, policy)` +
+  `checkTagPolicy(tags, policy)` — mechanical defense against thin tag-page sprawl
+  (v0.3.0). Tag pages that aren't a declared pillar, don't have a `cornerstones`
+  entry, and sit below `indexMinPosts` should render `noindex,follow`; `buildSitemap`
+  drops them from the sitemap automatically. `aliases` names known duplicate tags
+  (`usa` → `us`) so site validators can warn on them. Omit `site.topics` entirely
+  for the old index-every-tag behavior.
 
 Each schema is exported as both the Zod value and the inferred TypeScript type.
 

@@ -37,6 +37,45 @@ export default function sitemap(): MetadataRoute.Sitemap {
 }
 ```
 
+## Topics policy — stopping thin tag-page sprawl (v0.3.0)
+
+Every tag mints a `/tag/` page, and on an agent-written site tags multiply
+faster than articles (field data: 74 of ~115 tags with exactly one post after
+two months; the thin pages intercepted explainer-intent queries at positions
+50–90 with zero CTR). Declare a policy in `site.config.ts`:
+
+```ts
+const config = {
+  // ...
+  topics: {
+    pillars: ["news", "guides"],               // curated sections: always indexed
+    cornerstones: {                            // tag → the article that owns its intent
+      natrium: "natrium-reactor-explained",
+    },
+    indexMinPosts: 4,                          // plain tags graduate at 4 posts
+    aliases: { usa: "us", nuclear: null },     // duplicate tags → canonical (null = drop)
+  },
+} satisfies Partial<SiteConfig>;
+```
+
+With `site.topics` set, `buildSitemap` automatically drops non-qualifying tag
+URLs. Wire the matching robots signal in the tag page (the shipped template
+does this):
+
+```ts
+import { indexableTag } from "@strand-cms/core";
+
+// in generateMetadata:
+const count = loadPosts(POSTS).filter((p) => p.frontmatter.tags.includes(tag)).length;
+robots: indexableTag(tag, count, site.topics) ? undefined : { index: false, follow: true },
+```
+
+Render the cornerstone as a "Start here" link at the top of the tag page
+(`site.topics?.cornerstones?.[tag]`), and call `checkTagPolicy(fm.tags,
+site.topics)` from your validator — report the results as warnings until the
+archive's aliased tags are migrated, then promote to errors. Omit `site.topics`
+entirely to keep the legacy index-every-tag behavior.
+
 ## `app/robots.ts`
 
 ```ts

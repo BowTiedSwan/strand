@@ -4,6 +4,7 @@ import {
   type RoutesConfig,
   postUrl,
   tagPath,
+  indexableTag,
 } from "../schema";
 import { isCrawlSurfacePath } from "./crawl-surface";
 
@@ -42,7 +43,7 @@ export function buildSitemap(
   const entries: SitemapEntry[] = [
     { url: site.url, lastModified: new Date().toISOString(), changeFrequency: "daily", priority: 1 },
   ];
-  const tags = new Set<string>();
+  const tagCounts = new Map<string, number>();
   for (const p of posts) {
     if (p.frontmatter.noindex) continue;
     entries.push({
@@ -51,9 +52,13 @@ export function buildSitemap(
       changeFrequency: "weekly",
       priority: 0.8,
     });
-    p.frontmatter.tags.forEach((t) => tags.add(t));
+    p.frontmatter.tags.forEach((t) => tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1));
   }
-  for (const t of tags) {
+  for (const [t, count] of tagCounts) {
+    // Topics policy: tag pages the theme renders noindex must not be
+    // sitemapped (mixed signal, wasted crawl budget). No site.topics
+    // declared → indexableTag passes everything → legacy behavior.
+    if (!indexableTag(t, count, site.topics)) continue;
     entries.push({
       url: xmlSafeUrl(new URL(tagPath(routes, t), site.url).toString()),
       lastModified: new Date().toISOString(),

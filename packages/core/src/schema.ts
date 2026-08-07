@@ -69,6 +69,47 @@ export const AuthorFrontmatter = z.object({
 });
 export type AuthorFrontmatter = z.infer<typeof AuthorFrontmatter>;
 
+/* ==================================================== Topics policy */
+
+/**
+ * Mechanical defense against thin-tag-page sprawl.
+ *
+ * Every tag an agent mints auto-generates a tag/topic page. Left unchecked,
+ * a programmatic publication accumulates one-post tag pages faster than
+ * articles. Field data (Nuclear News Network, July 2026): 74 of ~115 tags
+ * had exactly one post; the thin pages outranked the site's own explainers
+ * for their queries at positions 50–90 with zero CTR, and two-thirds of
+ * sitemap URLs were boilerplate lists. Prose "don't mint tags" rules drift —
+ * the policy is mechanical, like SourcePolicy.
+ *
+ * A tag page is INDEXABLE when any of:
+ *   - it appears in `pillars` (curated sections with hand-written SEO copy),
+ *   - it has a `cornerstones` entry (the page routes intent to a reference
+ *     article via a "Start here" link the theme renders),
+ *   - it has >= `indexMinPosts` posts (a genuine archive).
+ * Everything else should render `noindex,follow` and stays out of the
+ * sitemap — buildSitemap applies the sitemap half automatically when
+ * `site.topics` is set; themes apply the robots half via indexableTag().
+ *
+ * Declared but empty (`topics: {}`) still means "policy on" with defaults.
+ * Omitted entirely means legacy behavior: every tag page indexed.
+ */
+export const TopicsPolicy = z.object({
+  /** Curated section/pillar slugs — always indexable. */
+  pillars: z.array(z.string()).default([]),
+  /** tag slug → slug of the evergreen article that owns the tag's search intent. */
+  cornerstones: z.record(z.string()).default({}),
+  /** Post count at which a plain tag page graduates into a genuine archive. */
+  indexMinPosts: z.number().int().min(1).default(4),
+  /**
+   * Known near-duplicate tags → canonical slug (null = drop the tag).
+   * Duplicate tags split one topic's ranking signals across two thin pages
+   * (e.g. `usa` vs `us`). checkTagPolicy() reports uses of aliased tags.
+   */
+  aliases: z.record(z.string().nullable()).default({}),
+});
+export type TopicsPolicy = z.infer<typeof TopicsPolicy>;
+
 /* ====================================================== Site config */
 
 export const SiteConfig = z.object({
@@ -128,6 +169,8 @@ export const SiteConfig = z.object({
     })
     .partial()
     .optional(),
+  /** Thin-tag-page policy (see TopicsPolicy above). Omit for legacy behavior. */
+  topics: TopicsPolicy.optional(),
 });
 export type SiteConfig = z.infer<typeof SiteConfig>;
 
@@ -210,4 +253,53 @@ export function checkSourcePolicy(
     }
   }
   return errors;
+}
+
+/* ============================================== Topics policy helpers */
+
+/**
+ * True when the tag's page should be indexed and sitemapped under `policy`.
+ * `policy` undefined = no policy declared = legacy behavior (everything
+ * indexed). Themes call this from the tag page's generateMetadata to emit
+ * `noindex,follow` for tags it rejects; buildSitemap calls it to keep those
+ * pages out of the sitemap (a sitemapped noindex URL is a mixed signal that
+ * wastes crawl budget).
+ */
+export function indexableTag(
+  tag: string,
+  postCount: number,
+  policy: TopicsPolicy | undefined,
+): boolean {
+  if (!policy) return true;
+  return (
+    policy.pillars.includes(tag) ||
+    tag in policy.cornerstones ||
+    postCount >= policy.indexMinPosts
+  );
+}
+
+/**
+ * Mechanical tag hygiene, mirror of checkSourcePolicy: one warning string
+ * per non-canonical tag; empty array = clean. Call from the site's
+ * validator. Report these as warnings, not errors, unless the archive has
+ * been migrated — hard-failing legacy posts breaks CI on day one (learned
+ * the pleasant way: the first site to adopt this had six legacy posts
+ * carrying aliased tags).
+ */
+export function checkTagPolicy(
+  tags: readonly string[] | undefined,
+  policy: TopicsPolicy | undefined,
+): string[] {
+  if (!policy) return [];
+  const warnings: string[] = [];
+  for (const t of tags ?? []) {
+    if (!(t in policy.aliases)) continue;
+    const canonical = policy.aliases[t];
+    warnings.push(
+      canonical
+        ? `tags: "${t}" is non-canonical — use "${canonical}" (site.topics.aliases)`
+        : `tags: "${t}" is a catch-all with no canonical replacement — drop it (site.topics.aliases)`,
+    );
+  }
+  return warnings;
 }
