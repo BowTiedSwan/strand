@@ -30,7 +30,7 @@ See [`DESIGN.md`](./DESIGN.md) for the full architecture, the keep/cut analysis,
 | [`packages/core`](./packages/core) | `@strand-cms/core` — content schema (Zod), MDX loader, and the SEO/GEO generators (sitemap, JSON-LD, RSS, robots, `llms.txt`, the `.md` endpoint) | ✅ built + verified |
 | [`packages/create-strand`](./packages/create-strand) | The `npm create strand` interactive scaffolder | ✅ built + verified |
 | [`packages/cli`](./packages/cli) | `@strand-cms/cli` — the `strand` bin: the **MCP server** (real git + filesystem ops) and `strand validate` | ✅ built + verified |
-| [`skills/`](./skills) | Three native skills (`strand-publish`, `strand-content-schema`, `strand-fact-check-cite`) + the skill install/dedup resolver | ✅ |
+| [`skills/`](./skills) | Five native skills (`strand-publish`, `strand-content-schema`, `strand-fact-check-cite`, `strand-review-gate`, `humanizer`) + the skill install/dedup resolver | ✅ |
 | [`profile-dist/`](./profile-dist) | A reference Hermes editor profile distribution (SOUL + config + cron) | ✅ |
 | [`packages/next`](./packages/next) | `@strand-cms/next` — the default theme: a Next.js publication with the **strand rail**, MDX rendering, and all SEO/GEO routes | ✅ built + verified |
 | [`packages/content-api`](./packages/content-api) | `@strand-cms/content-api` — typed query layer + framework-agnostic JSON API (Hono/Next/Bun) + typed client + static snapshot | ✅ built + verified |
@@ -69,7 +69,14 @@ Skills come from the [coreyhaines31/marketingskills](https://www.skills.sh/corey
 pack (tiered into mandatory / optional / subscription-gated) plus three native skills for
 Strand's own mechanics. The publishing core: `programmatic-seo`, `ai-seo`, `schema-markup`,
 `site-architecture`, `seo-audit`, `content-strategy`, `copywriting`, `copy-editing`,
-`analytics-tracking`, plus `strand-content-schema`, `strand-fact-check-cite`, `strand-publish`.
+`analytics-tracking`, plus the natives: `strand-content-schema`, `strand-fact-check-cite`,
+`strand-publish`, `strand-review-gate` (the pre-publish audit that catches off-topic bodies
+deterministic validation cannot), and `humanizer` (MIT, from
+[blader/humanizer](https://github.com/blader/humanizer) — mandatory on all content output;
+AI-pattern prose kills credibility). The resolver treats skills already resolvable in the
+target — including Hermes bundled categorized skills — as installed, and never creates a
+top-level shadow copy: Hermes ≥0.20 refuses ambiguous skill names, and a shadowed name is
+silently skipped on every cron wake.
 
 ## What every site emits automatically
 

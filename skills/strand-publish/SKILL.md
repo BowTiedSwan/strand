@@ -12,6 +12,7 @@ Operates Strand's Git-based publishing workflow. The content repo is the source 
 1. The post file lives at `content/posts/<slug>.mdx`.
 2. Frontmatter validates against the schema. Run `strand validate <slug>` (or the MCP `validate_post` tool). If it fails, fix it with the `strand-content-schema` skill first — do **not** publish a failing post.
 3. For factual or news content, `sources[]` is populated and claims are cited (use `strand-fact-check-cite`).
+4. The article has been through the `humanizer` pass, and — when the site runs a review gate — `strand-review-gate` has logged it as `pass` or `revised` in `content/review/<branch>.log`. Never publish an article the gate marked `blocked` or never saw.
 
 ## Workflow
 
@@ -33,5 +34,5 @@ Reverting a published post = a normal `git revert` of the merge commit via a new
 
 - PR-only. No direct `main` writes, no force-push.
 - Never publish a post that fails `validate`.
-- Never invent a `publishedAt` in the past to backdate a brand-new article.
+- Never invent a `publishedAt` in the past to backdate a brand-new article. Late or backfilled posts publish with the real (current) date.
 - Asset binaries go through the storage adapter, not committed as large blobs, unless the repo is configured for in-repo assets.

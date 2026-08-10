@@ -40,8 +40,17 @@ export const MARKETING = {
   ],
 } as const;
 
-/** Native skills bundled in this package (copied, not fetched from skills.sh). */
-export const NATIVE = ["strand-publish", "strand-content-schema", "strand-fact-check-cite"] as const;
+/** Native skills bundled in this package (copied, not fetched from skills.sh).
+ * `humanizer` (MIT, blader/humanizer via Wikipedia "Signs of AI writing") is mandatory
+ * for all content output; `strand-review-gate` is the pre-publish audit that catches
+ * what deterministic validation cannot (off-topic bodies under on-topic titles). */
+export const NATIVE = [
+  "strand-publish",
+  "strand-content-schema",
+  "strand-fact-check-cite",
+  "strand-review-gate",
+  "humanizer",
+] as const;
 const NATIVE_SRC = join(import.meta.dirname, "."); // skills/<name>/SKILL.md
 
 export type Mode = "core" | "core+media" | "custom";
@@ -66,17 +75,34 @@ export function desiredSkills(plan: Plan): string[] {
   return Array.from(new Set([...marketing, ...NATIVE]));
 }
 
-/** What is already installed in a target. */
+/** What is already installed in a target.
+ *
+ * Hermes targets ALSO resolve skills from bundled category dirs
+ * (skills/<category>/<slug>/SKILL.md), and Hermes >= 0.20 refuses ambiguous
+ * names: a top-level copy that shadows a bundled skill makes the name
+ * unresolvable — cron wakes then report the skill "not found" and silently
+ * run without it. So a categorized skill counts as installed and must never
+ * be re-installed top-level (e.g. `humanizer` ships bundled as
+ * creative/humanizer in stock Hermes profiles). */
 function installed(target: Target): Set<string> {
   const dir = target.kind === "hermes"
     ? join(homedir(), ".hermes", "profiles", target.profile, "skills")
     : target.dir;
   if (!existsSync(dir)) return new Set();
-  return new Set(
-    readdirSync(dir, { withFileTypes: true })
-      .filter((e) => e.isDirectory())
-      .map((e) => e.name),
-  );
+  const names = new Set<string>();
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    if (!e.isDirectory() || e.name.startsWith(".")) continue;
+    if (existsSync(join(dir, e.name, "SKILL.md"))) {
+      names.add(e.name); // top-level skill
+      continue;
+    }
+    if (target.kind !== "hermes") continue;
+    // Category dir: its children are resolvable skills too.
+    for (const c of readdirSync(join(dir, e.name), { withFileTypes: true })) {
+      if (c.isDirectory() && existsSync(join(dir, e.name, c.name, "SKILL.md"))) names.add(c.name);
+    }
+  }
+  return names;
 }
 
 function isNative(name: string): boolean {

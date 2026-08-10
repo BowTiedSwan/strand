@@ -189,12 +189,14 @@ Site-level SEO policy lives in `SiteConfig` (same file): `titleSuffix` (determin
 
 ### Native skills (not covered by the pack — shipped in `skills/`)
 
-These operate Strand's own mechanics, so they can't be borrowed:
+These operate Strand's own mechanics (or are mandatory for its output quality), so they can't be left to the pack:
 - **`strand-publish`** — commit MDX, open a PR, never push main, trigger deploy. → `skills/strand-publish/SKILL.md`
 - **`strand-content-schema`** — write/repair frontmatter so it validates against §4. → `skills/strand-content-schema/SKILL.md`
 - **`strand-fact-check-cite`** — verify factual claims, attach sources, populate `sources[]`. → `skills/strand-fact-check-cite/SKILL.md`
+- **`strand-review-gate`** — pre-publish audit: topicality, sibling-clone detection, answer-first lede, humanizer pass, per-article audit log. Exists because deterministic validation passes keyword-swapped headings over an off-topic body — an agent once shipped a full batch of paraphrased sibling articles that cleared every schema and keyword check. → `skills/strand-review-gate/SKILL.md`
+- **`humanizer`** — strip AI-writing patterns from all content output (MIT, vendored from blader/humanizer, based on Wikipedia's "Signs of AI writing"). → `skills/humanizer/SKILL.md`
 
-Default install = 9 mandatory marketing skills + 3 native skills. The installer **diffs against already-installed skills and installs only the gap** (see `skills/resolve-skills.ts`).
+Default install = 9 mandatory marketing skills + 5 native skills. The installer **diffs against already-resolvable skills and installs only the gap** (see `skills/resolve-skills.ts`). For Hermes targets, "resolvable" includes bundled categorized skills (`skills/<category>/<slug>/`): Hermes ≥0.20 refuses ambiguous names, so installing a top-level copy of a bundled skill (e.g. `humanizer`) makes the name unresolvable and cron wakes silently skip it. Two more operational rules learned in production: **pin every Hermes cron job to an explicit provider + model** (unpinned jobs are skipped with "Skipped to prevent unintended spend" the moment global config drifts — a silent standing failure), and the article body must never open with an in-body `# H1` (themes render the frontmatter title).
 
 ---
 
@@ -264,6 +266,8 @@ strand/
 │   ├── strand-publish/SKILL.md
 │   ├── strand-content-schema/SKILL.md
 │   ├── strand-fact-check-cite/SKILL.md
+│   ├── strand-review-gate/SKILL.md
+│   ├── humanizer/SKILL.md           ← vendored (MIT, blader/humanizer)
 │   └── resolve-skills.ts            ← standalone reference resolver
 └── profile-dist/                    ← reference Hermes editor distribution
     ├── SOUL.md

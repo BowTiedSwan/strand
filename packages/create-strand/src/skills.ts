@@ -29,7 +29,13 @@ export const MARKETING = {
   ],
 } as const;
 
-export const NATIVE = ["strand-publish", "strand-content-schema", "strand-fact-check-cite"] as const;
+export const NATIVE = [
+  "strand-publish",
+  "strand-content-schema",
+  "strand-fact-check-cite",
+  "strand-review-gate",
+  "humanizer",
+] as const;
 
 export type Target =
   | { kind: "skills.sh"; dir: string }
@@ -65,12 +71,29 @@ function targetDir(t: Target): string {
     : t.dir;
 }
 
+/**
+ * Hermes targets also resolve skills from bundled category dirs
+ * (skills/<category>/<slug>/SKILL.md), and Hermes >= 0.20 refuses ambiguous
+ * names — a top-level copy shadowing a bundled skill makes it unresolvable
+ * (cron reports it "not found"). Categorized skills therefore count as
+ * installed and are never re-installed top-level.
+ */
 function installed(t: Target): Set<string> {
   const dir = targetDir(t);
   if (!existsSync(dir)) return new Set();
-  return new Set(
-    readdirSync(dir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name),
-  );
+  const names = new Set<string>();
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    if (!e.isDirectory() || e.name.startsWith(".")) continue;
+    if (existsSync(join(dir, e.name, "SKILL.md"))) {
+      names.add(e.name);
+      continue;
+    }
+    if (t.kind !== "hermes") continue;
+    for (const c of readdirSync(join(dir, e.name), { withFileTypes: true })) {
+      if (c.isDirectory() && existsSync(join(dir, e.name, c.name, "SKILL.md"))) names.add(c.name);
+    }
+  }
+  return names;
 }
 
 const isNative = (n: string) => (NATIVE as readonly string[]).includes(n);

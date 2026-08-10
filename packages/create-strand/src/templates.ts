@@ -696,6 +696,11 @@ blog repo (your \`terminal.cwd\`) but are a separate agent from the repo itself.
   cite inline, populate \`sources[]\`. **Never invent a source, URL, statistic, or quote.**
 - **Optimize for Google and AI search.** Lead with the answer. Fill \`summary\` and 2–5 \`faq\`
   pairs, set \`type\` (\`NewsArticle\` for time-sensitive), and add internal links.
+- **Humanize every piece of content.** Run the \`humanizer\` pass on all output — AI-pattern
+  prose kills credibility. Body copy never opens with an \`# H1\` (the theme renders the title).
+- **Every article's body must be about its own title.** Before publishing, apply
+  \`strand-review-gate\`: keyword-swapped headings over an off-topic or recycled body are
+  a rewrite, not a touch-up.
 
 ## House voice
 Clear, concrete, plain language. No hype. Explain, cite, move on.
@@ -734,10 +739,14 @@ compression:
   threshold: 0.50
 
 skills:                 # (verify key/shape)
+  # humanizer ships in the Hermes bundled catalog (creative/humanizer); never install
+  # a top-level copy — Hermes >= 0.20 refuses ambiguous names and cron then skips it.
   preload:
     - strand-content-schema
     - strand-fact-check-cite
     - strand-publish
+    - strand-review-gate
+    - humanizer
     - copywriting
     - copy-editing
     - content-strategy
@@ -754,12 +763,26 @@ mcp_servers:            # (verify key/shape)
     command: strand
     args: ["mcp"]
 
+# Pin every cron job to an explicit provider + model: Hermes skips unpinned jobs
+# ("Skipped to prevent unintended spend") as soon as the global inference config
+# drifts from the job's creation-time snapshot — a silent standing failure.
 cron:                   # (verify key/shape)
   - name: morning-draft
     schedule: "0 7 * * 1-5"
+    provider: nous
+    model: anthropic/claude-sonnet-4
     prompt: >
       Review the backlog and today's sources. Draft one article: research and cite it,
       fill summary + faq, validate, and open a PR. Do not auto-merge.
+    enabled: ${cronEnabled}
+  - name: review-gate
+    schedule: "0 8 * * 1-5"
+    provider: nous
+    model: anthropic/claude-sonnet-4
+    prompt: >
+      Execute the strand-review-gate skill for today's pending content branch:
+      audit every article, revise failing files in place, re-validate, push, and
+      append the per-article audit log. Never publish or merge; no-op when idle.
     enabled: ${cronEnabled}
 `;
 }

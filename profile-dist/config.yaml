@@ -31,10 +31,16 @@ auxiliary:
 
 # Preload the editorial skill set every session (synced by resolve-skills.ts).
 skills:                   # (verify exact key/shape against Hermes config reference)
+  # NOTE: `humanizer` ships in the Hermes bundled catalog (creative/humanizer).
+  # NEVER install a top-level skills/humanizer copy into the profile — Hermes >= 0.20
+  # refuses ambiguous skill names and cron wakes then skip the skill as "not found".
+  # resolve-skills.ts treats categorized bundled skills as installed for this reason.
   preload:
     - strand-content-schema
     - strand-fact-check-cite
     - strand-publish
+    - strand-review-gate
+    - humanizer
     - copywriting
     - copy-editing
     - content-strategy
@@ -54,14 +60,36 @@ mcp_servers:              # (verify exact key/shape against Hermes integrations 
     # or type: url / url: http://localhost:8787/mcp for a long-running server
 
 # Optional scheduled cadence — e.g. weekday morning news drafting.
+#
+# PIN EVERY CRON JOB to an explicit provider + model. Hermes skips unpinned jobs
+# with "Skipped to prevent unintended spend" the moment the profile's global
+# inference config drifts from the job's creation-time snapshot — the job then
+# fails silently on every wake until someone reads the cron output files.
+# (A production Strand site lost three weekly publishes exactly this way.)
 cron:                     # (verify exact key/shape against Hermes cron reference)
   - name: morning-draft
     schedule: "0 7 * * 1-5"        # 07:00, Mon–Fri
+    provider: nous                  # explicit pin — survives global config changes
+    model: anthropic/claude-sonnet-4
     prompt: >
       Review the topic backlog and today's sources. Draft one NewsArticle:
       research and cite it, fill summary + faq, validate, and open a PR.
       Do not auto-merge.
     enabled: false                  # installer turns this on if the user opts into cadence
+  # Review gate between drafting and publish/merge (see skills/strand-review-gate).
+  # Deterministic validation cannot catch an on-topic title over an off-topic body;
+  # this wake audits every pending article, revises in place, and writes the
+  # per-article log that the publish step (or the human merging) requires.
+  - name: review-gate
+    schedule: "0 8 * * 1-5"        # after drafting, before publish/merge
+    provider: nous
+    model: anthropic/claude-sonnet-4
+    prompt: >
+      Execute the strand-review-gate skill exactly for today's pending content
+      branch: audit every article, revise failing files in place, re-run
+      validation until green, push the branch, and append the per-article
+      audit log. Never publish or merge; report a no-op when nothing is pending.
+    enabled: false
 
 display:
   busy_input_mode: queue

@@ -21,6 +21,7 @@ Every Strand post is an MDX file at `content/posts/<slug>.mdx` whose YAML frontm
 - `publishedAt` / `updatedAt` are ISO 8601 datetimes.
 - `author` must reference an existing `content/authors/<id>.mdx`. Create the author file if the persona is new.
 - `featureImage.alt` is required when `featureImage` is present (accessibility + image SEO).
+- The body must **not** open with an `# H1` heading — Strand themes render the frontmatter `title` as the page `<h1>`, so an in-body H1 ships a duplicate. Start the body with the answer-first lede paragraph; use `##` for sections.
 
 ## Get the GEO fields right (they are why this project exists)
 
