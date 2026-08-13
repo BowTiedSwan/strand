@@ -61,6 +61,8 @@ export function scaffold(a: Answers, opts: ScaffoldOptions = {}): ScaffoldResult
     w("app/blog/[slug]/page.tsx", t.appBlogSlugPage());
     w("app/blog/[slug]/opengraph-image.tsx", t.appBlogSlugOgImage());
     w("app/blog-md/[slug]/route.ts", t.appBlogSlugMd());
+    w("app/tag/[tag]/page.tsx", t.appTagPage());
+    w("app/author/[author]/page.tsx", t.appAuthorPage());
     w("app/sitemap.ts", t.appSitemap());
     w("app/robots.ts", t.appRobots());
     w("proxy.ts", t.appProxy());

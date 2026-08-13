@@ -9,7 +9,7 @@ export function gitignore(): string {
 }
 
 export function projectPackageJson(a: Answers): string {
-  const deps: Record<string, string> = { "@strand-cms/core": "^0.0.1" };
+  const deps: Record<string, string> = { "@strand-cms/core": "^0.3.1" };
   if (a.frontend === "next") {
     Object.assign(deps, {
       next: "^16.2.9", react: "^19.2.7", "react-dom": "^19.2.7",
@@ -94,11 +94,19 @@ const config = {
   // publish posts without og:image when no explicit image is set.
   generateOgImages: true,
   organization: { name: "${a.projectName}" },
+  // Thin-tag-page policy (v0.3). Omit entirely for legacy index-every-tag.
+  // topics: {
+  //   pillars: ["news", "guides"],
+  //   cornerstones: { /* tag: "explainer-slug" */ },
+  //   indexMinPosts: 4,
+  //   aliases: { /* usa: "us", nuclear: null */ },
+  // },
 } satisfies Partial<SiteConfig>;
 
 export default config;
 `;
 }
+
 
 export function routesConfig(): string {
   return `import type { RoutesConfig } from "@strand-cms/core";
@@ -217,20 +225,25 @@ ${analyticsTag}        {children}
 
 export function appIndex(): string {
   return `import Link from "next/link";
-import { loadPosts } from "@strand-cms/core";
-import { POSTS, routes } from "@/lib/strand";
-import { postPath } from "@strand-cms/core";
+import { loadPosts, postPath, tagPath } from "@strand-cms/core";
+import { POSTS, routes, site } from "@/lib/strand";
 
 export default function Home() {
   const posts = loadPosts(POSTS);
   return (
     <main>
-      <h1>Latest</h1>
+      <h1>{site.name}</h1>
+      <p>{site.description}</p>
       <ul>
         {posts.map((p) => (
           <li key={p.slug}>
             <Link href={postPath(routes, p.slug)}>{p.frontmatter.title}</Link>
             <p>{p.frontmatter.description}</p>
+            <p>
+              {p.frontmatter.tags.slice(0, 3).map((t) => (
+                <Link key={t} href={tagPath(routes, t)} style={{ marginRight: "0.75rem" }}>#{t}</Link>
+              ))}
+            </p>
           </li>
         ))}
       </ul>
@@ -240,11 +253,15 @@ export default function Home() {
 `;
 }
 
+
 export function appBlogSlugPage(): string {
   return `import { notFound } from "next/navigation";
+import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
-import { loadPost, loadAuthor, buildMetadata, postGraph, postPath } from "@strand-cms/core";
+import {
+  loadPosts, loadPost, loadAuthor, buildMetadata, postGraph, postPath, tagPath, authorPath,
+} from "@strand-cms/core";
 import { POSTS, AUTHORS, site, routes } from "@/lib/strand";
 import { mdxComponents } from "@/components/mdx-components";
 
@@ -253,6 +270,10 @@ import { mdxComponents } from "@/components/mdx-components";
 const mdxOptions = { mdxOptions: { remarkPlugins: [remarkGfm] } };
 
 type Params = { params: Promise<{ slug: string }> };
+
+export function generateStaticParams() {
+  return loadPosts(POSTS).map((p) => ({ slug: p.slug }));
+}
 
 export async function generateMetadata({ params }: Params) {
   const { slug } = await params;
@@ -274,27 +295,173 @@ export default async function Page({ params }: Params) {
   const { slug } = await params;
   const post = loadPost(POSTS, slug, {});
   if (!post) notFound();
-  const author = loadAuthor(AUTHORS, post.frontmatter.author);
+  const fm = post.frontmatter;
+  const author = loadAuthor(AUTHORS, fm.author);
   const graph = postGraph(post, author, site, routes);
 
   return (
     <article className="article prose">
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
-      <h1>{post.frontmatter.title}</h1>
+      <p>
+        {fm.tags.map((t) => (
+          <Link key={t} href={tagPath(routes, t)} style={{ marginRight: "0.75rem" }}>#{t}</Link>
+        ))}
+      </p>
+      <h1>{fm.title}</h1>
+      <p>
+        By{" "}
+        <Link href={authorPath(routes, fm.author)}>
+          <strong>{author?.frontmatter.name ?? fm.author}</strong>
+        </Link>
+      </p>
       {/* Verbatim grounding paragraph — first element of the body, where AI engines quote from. */}
-      {post.frontmatter.summary && <p className="grounding">{post.frontmatter.summary}</p>}
+      {fm.summary && <p className="grounding">{fm.summary}</p>}
       <MDXRemote source={post.body} components={mdxComponents} options={mdxOptions} />
+      {fm.faq.length > 0 && (
+        <section>
+          <h2>FAQ</h2>
+          {fm.faq.map((item) => (
+            <div key={item.q}>
+              <h3>{item.q}</h3>
+              <p>{item.a}</p>
+            </div>
+          ))}
+        </section>
+      )}
+      {fm.sources.length > 0 && (
+        <section>
+          <h2>Sources</h2>
+          <ol>
+            {fm.sources.map((s) => (
+              <li key={s.url}>
+                <a href={s.url} rel="noopener noreferrer">{s.title}</a>
+                {s.publisher ? \` — \${s.publisher}\` : ""}
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
     </article>
   );
 }
 `;
 }
 
+
 /**
  * Per-article 1200×630 social card. File-based so every post gets a real
  * og:image / twitter:image; page.tsx wires the URL into metadata explicitly.
  */
+export function appTagPage(): string {
+  return `import Link from "next/link";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { loadPosts, postPath, indexableTag, metaDescription } from "@strand-cms/core";
+import { POSTS, routes, site } from "@/lib/strand";
+
+export function generateStaticParams() {
+  const tags = new Set<string>();
+  loadPosts(POSTS).forEach((p) => p.frontmatter.tags.forEach((t) => tags.add(t)));
+  return [...tags].map((tag) => ({ tag }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ tag: string }> }): Promise<Metadata> {
+  const { tag: raw } = await params;
+  const tag = decodeURIComponent(raw);
+  const url = new URL(\`/tag/\${encodeURIComponent(tag)}\`, site.url).href;
+  // Topics policy: thin tag pages render noindex,follow. No site.topics → legacy index-all.
+  const count = loadPosts(POSTS).filter((p) => p.frontmatter.tags.includes(tag)).length;
+  const index = indexableTag(tag, count, site.topics);
+  return {
+    title: \`#\${tag}\`,
+    description: metaDescription(\`Posts tagged \${tag} on \${site.name}.\`),
+    alternates: { canonical: url },
+    robots: index ? undefined : { index: false, follow: true },
+  };
+}
+
+export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
+  const { tag: raw } = await params;
+  const tag = decodeURIComponent(raw);
+  const all = loadPosts(POSTS);
+  const posts = all.filter((p) => p.frontmatter.tags.includes(tag));
+  if (!posts.length) notFound();
+
+  const cornerstoneSlug = site.topics?.cornerstones?.[tag];
+  const cornerstone = cornerstoneSlug ? all.find((p) => p.slug === cornerstoneSlug) : undefined;
+
+  return (
+    <main>
+      <h1>#{tag}</h1>
+      {cornerstone && (
+        <p>
+          <strong>Start here:</strong>{" "}
+          <Link href={postPath(routes, cornerstone.slug)}>{cornerstone.frontmatter.title}</Link>
+        </p>
+      )}
+      <ul>
+        {posts.map((p) => (
+          <li key={p.slug}>
+            <Link href={postPath(routes, p.slug)}>{p.frontmatter.title}</Link>
+            <p>{p.frontmatter.description}</p>
+          </li>
+        ))}
+      </ul>
+    </main>
+  );
+}
+`;
+}
+
+export function appAuthorPage(): string {
+  return `import Link from "next/link";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { loadPosts, loadAuthors, loadAuthor, postPath, metaDescription } from "@strand-cms/core";
+import { POSTS, AUTHORS, routes, site } from "@/lib/strand";
+
+export function generateStaticParams() {
+  return loadAuthors(AUTHORS).map((a) => ({ author: a.frontmatter.id }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ author: string }> }): Promise<Metadata> {
+  const { author } = await params;
+  const a = loadAuthor(AUTHORS, author);
+  if (!a) return {};
+  const url = new URL(\`/author/\${encodeURIComponent(author)}\`, site.url).href;
+  return {
+    title: a.frontmatter.name,
+    description: metaDescription(
+      a.frontmatter.bio ?? \`Articles by \${a.frontmatter.name} on \${site.name}.\`,
+    ),
+    alternates: { canonical: url },
+  };
+}
+
+export default async function AuthorPage({ params }: { params: Promise<{ author: string }> }) {
+  const { author } = await params;
+  const a = loadAuthor(AUTHORS, author);
+  if (!a) notFound();
+  const posts = loadPosts(POSTS).filter((p) => p.frontmatter.author === author);
+  return (
+    <main>
+      <h1>{a.frontmatter.name}</h1>
+      {a.frontmatter.bio && <p>{a.frontmatter.bio}</p>}
+      <ul>
+        {posts.map((p) => (
+          <li key={p.slug}>
+            <Link href={postPath(routes, p.slug)}>{p.frontmatter.title}</Link>
+            <p>{p.frontmatter.description}</p>
+          </li>
+        ))}
+      </ul>
+    </main>
+  );
+}
+`;
+}
+
 export function appBlogSlugOgImage(): string {
   return `import { ImageResponse } from "next/og";
 import { loadPosts, loadPost } from "@strand-cms/core";
@@ -554,12 +721,34 @@ ${map[a.subscriptions]}
 /* ----------------------------------------------------- validation */
 
 export function validateScript(): string {
-  return `import { readdirSync } from "node:fs";
+  return `import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { validatePostFile } from "@strand-cms/core";
+import { validatePostFile, META_DESCRIPTION_MIN, META_DESCRIPTION_MAX } from "@strand-cms/core";
 
-const dir = join(process.cwd(), "content/posts");
+const root = process.cwd();
+const dir = join(root, "content/posts");
 let bad = 0;
+
+// Site description hard window (Bing 25–160). SiteConfig Zod enforces this at
+// runtime in the app; mirror it here so CI fails before deploy.
+const siteCfgPath = join(root, "site.config.ts");
+if (existsSync(siteCfgPath)) {
+  const src = readFileSync(siteCfgPath, "utf8");
+  const m = src.match(/description\\s*:\\s*"([^"]*)"/) || src.match(/description\\s*:\\s*'([^']*)'/);
+  if (!m) {
+    bad++;
+    console.error("\\u2717 site.config.ts — missing description string");
+  } else {
+    const n = m[1].length;
+    if (n < META_DESCRIPTION_MIN || n > META_DESCRIPTION_MAX) {
+      bad++;
+      console.error(\`\\u2717 site.config.ts — description \${n} chars (Bing hard window \${META_DESCRIPTION_MIN}–\${META_DESCRIPTION_MAX})\`);
+    } else {
+      console.log(\`\\u2713 site.config.ts (description \${n})\`);
+    }
+  }
+}
+
 for (const f of readdirSync(dir).filter((f) => f.endsWith(".mdx") || f.endsWith(".md"))) {
   const r = validatePostFile(join(dir, f));
   if (r.ok) { console.log("\\u2713 " + f); continue; }
@@ -567,10 +756,11 @@ for (const f of readdirSync(dir).filter((f) => f.endsWith(".mdx") || f.endsWith(
   console.error("\\u2717 " + f);
   for (const e of r.errors) console.error("   " + e.path + ": " + e.message);
 }
-if (bad) { console.error("\\n" + bad + " invalid post(s)."); process.exit(1); }
-console.log("\\nAll posts valid.");
+if (bad) { console.error("\\n" + bad + " invalid file(s)."); process.exit(1); }
+console.log("\\nAll content valid.");
 `;
 }
+
 
 export function ciWorkflow(): string {
   return `name: validate-content
@@ -849,7 +1039,8 @@ does this), then \`npm run validate\`. The \`strand-publish\` skill opens the PR
 ## What Strand emits automatically
 \`sitemap.xml\`, \`robots.txt\`, \`feed.xml\`, \`llms.txt\`, \`llms-full.txt\`, per-post JSON-LD
 (Article/FAQPage/speakable + author entity), and a clean \`.md\` version of every post at
-\`/blog/<slug>.md\` for AI crawlers.
+\`/blog/<slug>.md\` for AI crawlers. Collection routes: \`/tag/<tag>\`
+(topics policy / thin-tag noindex) and \`/author/<author>\`.
 
 In Next.js projects, the \`.md\` surface is served by the internal
 \`app/blog-md/[slug]/route.ts\` route and rewritten from \`/blog/:slug.md\`. This avoids

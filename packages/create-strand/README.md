@@ -22,7 +22,7 @@ npm create strand@latest
   (publish commits to the base branch). This is the human's scaffold-time decision;
   agents get no flag to change it.
 - **Skill set** — which marketing skills to install (curated tiers or custom pick),
-  plus Strand's three native skills. Installs only what's missing.
+  plus Strand's native skills (schema, fact-check, publish, review-gate, humanizer). Installs only what's missing.
 - **Deploy target** — Vercel, Cloudflare Pages, Netlify, or self-host.
 - **Git init** with the first commit.
 
@@ -33,7 +33,7 @@ content-negotiated `.md` version of every page, statically at build.
 ## What it writes
 
 A ready-to-run project: the content schema and sample content, the chosen frontend with
-all SEO/GEO routes wired, CI frontmatter validation and a pre-commit hook (via
+all SEO/GEO routes wired (including `/tag` + `/author`, topics-policy ready), CI frontmatter validation and a pre-commit hook (via
 [`@strand-cms/cli`](https://www.npmjs.com/package/@strand-cms/cli)), the analytics and
 subscriptions adapters, the skill set, a deploy-on-merge GitHub Actions workflow that
 gates deploys on content validation, and — if chosen — the editor profile distribution.
