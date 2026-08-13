@@ -13,7 +13,7 @@ npm install @strand-cms/core
 
 Zod schemas that define the content contract agents write against:
 
-- `PostFrontmatter` — the post contract: slug, title, description, status
+- `PostFrontmatter` — the post contract: slug, title, description (50–160 chars), status; `SiteConfig.description` is 25–160
   (`draft`/`scheduled`/`published`), tags, authors, SEO fields, cited sources, FAQ,
   and AI-search targeting: `contentType` (`guide`/`comparison`/`roundup`/`news`/
   `explainer`), `primaryKeyword`, and per-article `keywords` (5–8).
@@ -63,6 +63,8 @@ import { buildMetadata, postGraph, sitemapXml, buildRss, buildRobots } from "@st
   max-image-preview:large, max-video-preview:-1`), `ai-content-type` / `ai-topic`
   hint tags, `article:modified_time` (from `updatedAt`, falling back to
   `publishedAt`), and OpenGraph + Twitter cards as framework-agnostic `PageMetadata`.
+  Descriptions are clamped with `metaDescription()` (Bing SEO/GEO hard window 25–160).
+- `metaDescription(text)` — word-boundary clamp helper for site/tag/dynamic templates.
 - `articleJsonLd` / `faqJsonLd` / `breadcrumbJsonLd` / `websiteJsonLd` / `postGraph` —
   JSON-LD (`Article`/`NewsArticle`/`BlogPosting`, `FAQPage`, breadcrumbs) ready to embed.
 - `sitemapXml`, `buildRss`, `buildRobots` — the classic crawl surface.

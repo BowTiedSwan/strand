@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { loadPosts, postPath, indexableTag } from "@strand-cms/core";
+import { loadPosts, postPath, indexableTag, metaDescription } from "@strand-cms/core";
 import { POSTS, routes, site } from "@/lib/strand";
 
 export function generateStaticParams() {
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ tag: stri
   const index = indexableTag(tag, count, site.topics);
   return {
     title: `#${tag}`,
-    description: `Posts tagged ${tag} on ${site.name}.`,
+    description: metaDescription(`Posts tagged ${tag} on ${site.name}.`),
     alternates: { canonical: url },
     robots: index ? undefined : { index: false, follow: true },
   };

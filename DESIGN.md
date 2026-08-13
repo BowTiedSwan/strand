@@ -118,7 +118,7 @@ export const PostFrontmatter = z.object({
   // — Identity & SEO core (from Ghost) —
   title:        z.string().min(1).max(70),          // SEO title-length guard
   slug:         z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-  description:  z.string().min(50).max(160),        // meta description
+  description:  z.string().min(50).max(160),        // meta description (Bing hard window 25–160; posts keep 50-floor)
   publishedAt:  z.string().datetime(),
   updatedAt:    z.string().datetime()               // full ISO datetime, or a bare
                  .or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)) // date ("2026-07-27")
@@ -154,7 +154,7 @@ export const PostFrontmatter = z.object({
 export type PostFrontmatter = z.infer<typeof PostFrontmatter>;
 ```
 
-`title`, `description`, `canonicalUrl` feed the SEO core. `type`, `faq`, `sources` feed the JSON-LD `schema-markup` skill. `summary`, `faq`, `sources` feed the GEO layer. `contentType`, `primaryKeyword`, `keywords` feed the AI-search head tags (§5).
+`title`, `description`, `canonicalUrl` feed the SEO core. `SiteConfig.description` is also capped at 25–160. Runtime emitters should pass dynamic descriptions through `metaDescription()` (word-boundary clamp to 160) so themes never ship an overlong SERP snippet. `type`, `faq`, `sources` feed the JSON-LD `schema-markup` skill. `summary`, `faq`, `sources` feed the GEO layer. `contentType`, `primaryKeyword`, `keywords` feed the AI-search head tags (§5).
 
 Site-level SEO policy lives in `SiteConfig` (same file): `titleSuffix` (deterministic absolute post titles — policy, not layout decoration), `generateOgImages` (opt-in per-post 1200×630 OG image route, default off), and a `SourcePolicy` primitive (allow/deny domains for `sources[]`).
 

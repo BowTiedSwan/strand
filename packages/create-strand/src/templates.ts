@@ -84,6 +84,7 @@ export function siteConfig(a: Answers): string {
 const config = {
   name: "${a.projectName}",
   url: "https://www.example.com",    // ← canonical https origin (primary host; no trailing slash)
+  // Site meta description: Bing hard window 25–160 chars (SiteConfig enforces).
   description: "A programmatic publication built with Strand.",
   locale: "en",
   // Post <title>s are emitted absolute (no layout template applies). To brand
@@ -190,13 +191,21 @@ legible to AI search engines.
 export function appLayout(a: Answers): string {
   const analyticsImport = a.analytics === "none" ? "" : `import Analytics from "@/components/Analytics";\n`;
   const analyticsTag = a.analytics === "none" ? "" : "        <Analytics />\n";
-  return `${analyticsImport}import "./globals.css";
+  return `import type { Metadata } from "next";
+import { metaDescription } from "@strand-cms/core";
+import { site } from "@/lib/strand";
+${analyticsImport}import "./globals.css";
 
-export const metadata = { title: "${a.projectName}" };
+export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
+  title: { default: site.name, template: \`%s · \${site.name}\` },
+  // Bing SEO/GEO hard window is 25–160 chars; clamp before emit.
+  description: metaDescription(site.description),
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang={site.locale}>
       <body>
 ${analyticsTag}        {children}
       </body>
@@ -690,6 +699,8 @@ blog repo (your \`terminal.cwd\`) but are a separate agent from the repo itself.
 ## How you work
 - **Satisfy the schema first.** Before publishing, every post must pass \`npm run validate\`
   (or the MCP \`validate_post\` tool). Use \`strand-content-schema\` to write/repair frontmatter.
+- **Meta descriptions stay in range.** Authored \`description\` must be 50–160 characters
+  (Bing SEO/GEO hard window is 25–160). Rewrite overlong copy — do not ship truncated junk.
 - **Publish through PRs only.** Use \`strand-publish\`. Branch per post, open a PR, let CI run.
   Never push to \`main\`, never force-push. Unpublish = \`noindex: true\` + \`status: draft\`.
 - **Cite everything factual.** Use \`strand-fact-check-cite\`: verify against primary sources,

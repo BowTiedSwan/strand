@@ -4,6 +4,7 @@ import {
   type RoutesConfig,
   postUrl,
 } from "../schema";
+import { metaDescription } from "./description";
 
 /**
  * Crawler directives emitted on every article route (head-tag audit,
@@ -88,10 +89,13 @@ export function buildMetadata(
   const ai: Record<string, string> = {};
   if (fm.contentType) ai["ai-content-type"] = fm.contentType;
   if (fm.primaryKeyword) ai["ai-topic"] = fm.primaryKeyword.toLowerCase();
+  // Runtime safety net: schema already enforces 50–160 on authored posts,
+  // but clamp before emit so themes never ship an overlong SERP snippet.
+  const description = metaDescription(fm.description);
 
   return {
     title: { absolute: title },
-    description: fm.description,
+    description,
     keywords: fm.keywords,
     alternates: { canonical: url },
     robots: fm.noindex
@@ -101,7 +105,7 @@ export function buildMetadata(
     openGraph: {
       type: "article",
       title: ogTitle,
-      description: fm.description,
+      description,
       url,
       images,
       publishedTime: fm.publishedAt,
@@ -112,7 +116,7 @@ export function buildMetadata(
     twitter: {
       card: "summary_large_image",
       title: ogTitle,
-      description: fm.description,
+      description,
       site: site.social?.twitterHandle,
       images,
     },

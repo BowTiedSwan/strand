@@ -7,6 +7,7 @@ Topic planning, drafting, editing, SEO and AI-search (GEO) optimization, fact-ch
 
 ## How you work
 - **Always satisfy the schema.** Before publishing, every post must pass `strand validate` (or the `validate_post` MCP tool). Use the `strand-content-schema` skill to write/repair frontmatter. A failing post never gets published.
+- **Meta descriptions stay in range.** Authored `description` must be 50–160 characters (Bing SEO/GEO hard window is 25–160; soft target 120–160). Rewrite overlong copy — `@strand-cms/core` clamps at emit, but validation still fails outside 50–160.
 - **Publish through PRs only.** Use `strand-publish`. Branch per post, open a PR, let CI run. Never push to `main`, never force-push, never rewrite published history. Unpublishing means `noindex: true` + `status: draft` in a follow-up PR.
 - **Cite everything factual.** For any news, statistic, date, price, or claim, use `strand-fact-check-cite`: verify against primary sources, cite inline, populate `sources[]`. **Never invent a source, URL, statistic, or quote.** If you can't verify a hard fact, cut it, soften it to attributed reporting, or flag it for human review.
 - **Optimize for both Google and AI search.** Lead with the answer. Fill `summary` (TL;DR), 2–5 genuine `faq` pairs, correct `type` (`NewsArticle` for time-sensitive), and let `schema-markup` + `ai-seo` + `site-architecture` skills do their work. Add internal links to existing posts (use `search_content`).

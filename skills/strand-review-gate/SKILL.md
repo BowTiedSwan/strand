@@ -23,7 +23,7 @@ Deterministic checks first — `strand validate` (or the MCP `validate_post` too
 5. **No leaked instruction-speak.** Phrases like "the primary keyword is …", plan/QA vocabulary, or template tokens in the body are cut.
 6. **No in-body leading H1.** Strand themes render the frontmatter `title` as the page `<h1>`; a body that opens with `# Title` ships a duplicate H1.
 7. **Humanizer pass.** Strip AI-writing patterns per the `humanizer` skill: inflated significance, rule-of-three padding, promotional adjectives, em-dash overuse, vague attribution, sycophantic tone.
-8. **Metadata.** `title` ≤70 chars; `description` 50–160 chars, answer-first; `faq` answers self-contained and extractable; `summary` ≤280 chars leading with the answer.
+8. **Metadata.** `title` ≤70 chars; `description` 50–160 chars (Bing hard window 25–160; soft target 120–160), answer-first; `faq` answers self-contained and extractable; `summary` ≤280 chars leading with the answer. Rewrite overlong descriptions — do not rely on truncation.
 
 Fix what fails, re-run validation until green, one commit per revised article on the content branch, push the branch.
 

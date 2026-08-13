@@ -174,6 +174,11 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   return post ? buildMetadata(post, site, routes) : {};
 }
 
+// For site/layout/tag metadata that is not a post, clamp with metaDescription()
+// so Bing's 25–160 SEO/GEO window is never exceeded:
+//   import { metaDescription } from "@strand-cms/core";
+//   description: metaDescription(site.description)
+
 export default function Page({ params }: { params: { slug: string } }) {
   const post = loadPost(POSTS, params.slug, {});
   if (!post) notFound();

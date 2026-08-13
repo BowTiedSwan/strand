@@ -1,3 +1,4 @@
+import { metaDescription } from "@strand-cms/core";
 import type { Metadata } from "next";
 import { Fraunces, Newsreader, IBM_Plex_Mono } from "next/font/google";
 import Link from "next/link";
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
   // titles as { absolute }, so articles are never double-branded by this
   // template. Post-title branding is SiteConfig.titleSuffix, an SEO decision.
   title: { default: site.name, template: `%s · ${site.name}` },
-  description: site.description,
+  description: metaDescription(site.description),
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

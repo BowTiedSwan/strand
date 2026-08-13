@@ -139,7 +139,11 @@ export const SiteConfig = z.object({
           "site.url must be an https origin with no path, query, hash, or trailing slash (e.g. https://www.example.com)",
       },
     ),
-  description: z.string(),
+  /**
+   * Site-wide meta description / Open Graph fallback.
+   * Bing SEO/GEO hard window is 25–160 chars; keep this in range.
+   */
+  description: z.string().min(25).max(160),
   locale: z.string().default("en"),
   /**
    * Optional suffix appended to every post <title> (e.g. " | Acme News").

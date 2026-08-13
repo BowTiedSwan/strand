@@ -16,7 +16,7 @@ Every Strand post is an MDX file at `content/posts/<slug>.mdx` whose YAML frontm
 ## Rules that commonly trip validation
 
 - `title` ≤ 70 characters (SEO title length). Write for the SERP, not just the page.
-- `description` 50–160 characters. This is the meta description — make it a real summary with the primary keyword, not filler.
+- `description` 50–160 characters (Bing SEO/GEO hard window is 25–160; authored posts keep the 50-char quality floor). Soft target 120–160 for SERP snippets. Make it a real summary with the primary keyword, not filler. `@strand-cms/core` also clamps via `metaDescription()` at emit time, but authored copy must still validate.
 - `slug` is kebab-case `^[a-z0-9]+(?:-[a-z0-9]+)*$`. No spaces, capitals, underscores, or trailing hyphens. It must match the filename.
 - `publishedAt` / `updatedAt` are ISO 8601 datetimes.
 - `author` must reference an existing `content/authors/<id>.mdx`. Create the author file if the persona is new.
