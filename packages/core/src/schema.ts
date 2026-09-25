@@ -1,3 +1,10 @@
+/**
+ * CLIENT-SAFE. This module is pure (zod + string helpers only — no node:fs,
+ * no node:path, no gray-matter). It is safe to import from `"use client"`
+ * components via `@strand-cms/core/schema` (postPath, tagPath, authorPath,
+ * SiteConfig, RoutesConfig, …). Keep it that way: never add a Node-only
+ * import here.
+ */
 import { z } from "zod";
 
 /* ============================================================ Posts */

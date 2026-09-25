@@ -1,3 +1,10 @@
+/**
+ * NOTE: this barrel includes `./loader` (node:fs). It is SERVER-ONLY —
+ * import it from Server Components, route handlers, and Node scripts only.
+ * `"use client"` components must import URL helpers / config schemas from
+ * `@strand-cms/core/schema` (client-safe, no fs) or receive precomputed
+ * plain data as props. See README "Client vs server".
+ */
 export * from "./schema";
 export * from "./loader";
 export * from "./seo/meta";

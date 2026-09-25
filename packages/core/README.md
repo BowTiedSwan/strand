@@ -34,6 +34,21 @@ Zod schemas that define the content contract agents write against:
 
 Each schema is exported as both the Zod value and the inferred TypeScript type.
 
+## Client vs server (Next.js)
+
+The `@strand-cms/core` barrel includes the filesystem loader (`node:fs`), so it
+is **server-only**. Importing it from a `"use client"` component makes Turbopack
+try to bundle `node:fs` for the browser and the app fails at runtime.
+
+- Client-safe: `import { postPath, tagPath, authorPath } from "@strand-cms/core/schema"`
+  (`SiteConfig`, `RoutesConfig` types too — pure `zod`, no `fs`).
+- Server-only: `loadPosts` / `loadPost` / `loadAuthors` / `validatePostFile`
+  (from `@strand-cms/core` or `@strand-cms/core/server`).
+- Pattern: compute link lists in a Server Component (or `lib/*.ts` server module)
+  and pass plain `{ href, label }` objects into `"use client"` components.
+  Never import the barrel — or `lib/strand.ts` if it wraps the loader — from
+  client code.
+
 ## Loader
 
 Filesystem in, typed content out:

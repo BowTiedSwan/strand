@@ -122,7 +122,13 @@ export default routes;
 }
 
 export function libStrand(): string {
-  return `import { SiteConfig, RoutesConfig } from "@strand-cms/core";
+  return `// SERVER-ONLY. This module wraps the filesystem loader (via lib config
+// parsing + POSTS/AUTHORS paths). Never import it — or the
+// "@strand-cms/core" barrel — from a "use client" component: Turbopack would
+// try to bundle node:fs for the browser. Client components that need URLs
+// must import { postPath, tagPath } from "@strand-cms/core/schema", or
+// receive plain { href, label } props computed here in Server Components.
+import { SiteConfig, RoutesConfig } from "@strand-cms/core/schema";
 import { join } from "node:path";
 import siteCfg from "@/site.config";
 import routesCfg from "@/routes.config";
@@ -1035,6 +1041,14 @@ ${a.frontend === "next" ? "npm run dev\n" : ""}npm run validate     # check all 
 ## Write a post
 Add \`content/posts/<slug>.mdx\` with valid frontmatter (the \`strand-content-schema\` skill
 does this), then \`npm run validate\`. The \`strand-publish\` skill opens the PR.
+
+## Client components (hard rule)
+\`lib/strand.ts\` and the \`@strand-cms/core\` barrel are **server-only** (filesystem
+loader, \`node:fs\`). Never import them from a \`"use client"\` component — Turbopack
+will try to bundle \`node:fs\` for the browser and the app fails at runtime. Client
+code that needs URLs imports \`{ postPath, tagPath }\` from
+\`@strand-cms/core/schema\`, or receives plain \`{ href, label }\` props computed in a
+Server Component.
 
 ## What Strand emits automatically
 \`sitemap.xml\`, \`robots.txt\`, \`feed.xml\`, \`llms.txt\`, \`llms-full.txt\`, per-post JSON-LD

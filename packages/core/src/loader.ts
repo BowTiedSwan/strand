@@ -1,3 +1,11 @@
+/**
+ * SERVER-ONLY. Reads MDX from disk (node:fs, node:path, gray-matter).
+ * Never import this module — or the `@strand-cms/core` barrel — from a
+ * `"use client"` component: Turbopack will try to bundle `node:fs` for the
+ * browser and the app fails at runtime. Client components that need URL
+ * helpers must import them from `@strand-cms/core/schema` instead, or
+ * receive plain `{ href, label }` objects computed in a Server Component.
+ */
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, basename } from "node:path";
 import matter from "gray-matter";

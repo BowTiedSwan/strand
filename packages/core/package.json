@@ -1,6 +1,6 @@
 {
   "name": "@strand-cms/core",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Strand core: content schema, MDX loader, and SEO/GEO generators.",
   "type": "module",
   "license": "MIT",
@@ -15,13 +15,21 @@
     "./schema": {
       "types": "./dist/schema.d.ts",
       "import": "./dist/schema.js"
+    },
+    "./loader": {
+      "types": "./dist/loader.d.ts",
+      "import": "./dist/loader.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node scripts/check-client-safe.mjs",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build"
   },

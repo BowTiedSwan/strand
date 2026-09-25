@@ -8,6 +8,20 @@ These are the thin App Router files that turn it into a running site. Assumes
 Verified: the package typechecks (`tsc --noEmit`) and the loader + every generator
 run against real MDX (see the smoke test in the build notes).
 
+## Client vs server — never import the barrel from `"use client"`
+
+`@strand-cms/core` (the barrel) re-exports `./loader`, which uses `node:fs` /
+`node:path` / `gray-matter`. A `"use client"` component that imports it forces
+Turbopack to bundle `node:fs` for the browser and the app fails at runtime.
+
+- Client-safe: `@strand-cms/core/schema` (`postPath`, `tagPath`, `authorPath`,
+  `SiteConfig`, `RoutesConfig` — pure `zod`, no `fs`).
+- Server-only: the barrel and `@strand-cms/core/server` (`loadPosts`,
+  `loadPost`, `loadAuthors`, `validatePostFile`).
+- Pattern: build `{ href, label }` link lists in a Server Component (e.g.
+  `app/layout.tsx`) and pass them as props into client nav components, which
+  should only use `next/link` + local state.
+
 ## Shared config — `lib/strand.ts`
 
 ```ts
